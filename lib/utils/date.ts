@@ -20,6 +20,16 @@ export function getMonthString(date: Date): string {
 }
 
 /**
+ * Parse a month string into a Date object in local timezone
+ * Avoids timezone issues by parsing manually
+ */
+function parseMonthString(monthString: string): Date {
+  const [year, month] = monthString.split('-').map(Number);
+  // Month is 0-indexed in Date constructor
+  return new Date(year, month - 1, 1);
+}
+
+/**
  * Get the first and last day of a month
  * Returns: { start: 'YYYY-MM-01', end: 'YYYY-MM-31' }
  */
@@ -27,7 +37,7 @@ export function getMonthRange(monthString: string): {
   start: string;
   end: string;
 } {
-  const date = new Date(monthString);
+  const date = parseMonthString(monthString);
   const year = date.getFullYear();
   const month = date.getMonth();
 
@@ -47,10 +57,11 @@ export function getMonthRange(monthString: string): {
  * Example: '2025-11-01' -> 'November 2025'
  */
 export function formatMonth(monthString: string): string {
-  const date = new Date(monthString);
+  const date = parseMonthString(monthString);
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
+    timeZone: 'UTC',
   });
 }
 
@@ -59,7 +70,7 @@ export function formatMonth(monthString: string): string {
  */
 export function isDateInMonth(dateString: string, monthString: string): boolean {
   const date = new Date(dateString);
-  const month = new Date(monthString);
+  const month = parseMonthString(monthString);
 
   return (
     date.getFullYear() === month.getFullYear() &&
