@@ -1,6 +1,6 @@
 -- Seed categories and groups for Epps Budget
 -- This script assumes the admin user has already been created via Supabase Auth UI
--- User email: liana.william
+-- User email: eppswf@gmail.com
 
 -- Get the user_id for the admin user
 DO $$
@@ -13,10 +13,10 @@ DECLARE
   qol_group_id UUID;
 BEGIN
   -- Find the admin user by email (adjust email if different)
-  SELECT id INTO admin_user_id FROM auth.users WHERE email = 'liana.william' LIMIT 1;
+  SELECT id INTO admin_user_id FROM auth.users WHERE email = 'eppswf@gmail.com' LIMIT 1;
 
   IF admin_user_id IS NULL THEN
-    RAISE EXCEPTION 'Admin user not found. Please create user with email: liana.william';
+    RAISE EXCEPTION 'Admin user not found. Please create user with email: eppswf@gmail.com';
   END IF;
 
   -- Create user profile

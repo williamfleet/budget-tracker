@@ -15,7 +15,7 @@ This guide will walk you through setting up your Supabase database for the Epps 
 2. Navigate to **Authentication** > **Users**
 3. Click **"Add user"** > **"Create new user"**
 4. Enter the following details:
-   - **Email**: `liana.william`
+   - **Email**: `eppswf@gmail.com`
    - **Password**: `PoombieKeet@n22!`
    - Check **"Auto Confirm User"** (important!)
 5. Click **"Create user"**
@@ -64,7 +64,7 @@ Once the database is set up, you can:
 1. Run the development server: `npm run dev`
 2. Navigate to `http://localhost:3000`
 3. Log in with:
-   - Email: `liana.william`
+   - Email: `eppswf@gmail.com`
    - Password: `PoombieKeet@n22!`
 
 ## Database Schema Overview
@@ -86,7 +86,7 @@ Once the database is set up, you can:
 ## Troubleshooting
 
 **Error: "Admin user not found"**
-- Make sure you created the user in Step 1 with the exact email: `liana.william`
+- Make sure you created the user in Step 1 with the exact email: `eppswf@gmail.com`
 - The user must be confirmed (check "Auto Confirm User")
 
 **Error: "relation does not exist"**
