@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import SignOutButton from '@/components/SignOutButton';
+import BudgetDashboard from '@/components/budget/BudgetDashboard';
+import { getBudgetSummary } from '@/lib/services/budget';
 
 export default async function Home() {
   const supabase = await createClient();
@@ -12,6 +14,9 @@ export default async function Home() {
   if (!user) {
     redirect('/login');
   }
+
+  // Fetch budget data
+  const budgetData = await getBudgetSummary(user.id);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -27,18 +32,8 @@ export default async function Home() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Welcome to your Budget Dashboard
-          </h2>
-          <p className="text-gray-600">
-            You are successfully logged in as <strong>{user.email}</strong>
-          </p>
-          <p className="text-gray-600 mt-2">
-            The budget dashboard will be built here next!
-          </p>
-        </div>
+      <main className="px-4 sm:px-6 lg:px-8 py-8">
+        <BudgetDashboard budgetData={budgetData} />
       </main>
     </div>
   );
