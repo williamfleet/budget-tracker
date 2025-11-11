@@ -1,10 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import SignOutButton from '@/components/SignOutButton';
-import BudgetPage from '@/components/BudgetPage';
-import { getBudgetSummary, getCategories } from '@/lib/services/budget';
+import TransactionsPageClient from '@/components/transactions/TransactionsPageClient';
+import { getTransactions } from '@/lib/services/transactions';
+import { getCategories } from '@/lib/services/budget';
 
-export default async function Home() {
+export default async function TransactionsPage() {
   const supabase = await createClient();
 
   const {
@@ -15,9 +16,9 @@ export default async function Home() {
     redirect('/login');
   }
 
-  // Fetch budget data and categories
-  const [budgetData, { groups, categories }] = await Promise.all([
-    getBudgetSummary(user.id),
+  // Fetch transactions and categories
+  const [{ transactions, total }, { groups, categories }] = await Promise.all([
+    getTransactions(user.id),
     getCategories(user.id),
   ]);
 
@@ -31,13 +32,13 @@ export default async function Home() {
               <div className="flex gap-4">
                 <a
                   href="/"
-                  className="text-indigo-600 hover:text-indigo-800 font-medium"
+                  className="text-gray-600 hover:text-gray-900 font-medium"
                 >
                   Budget
                 </a>
                 <a
                   href="/transactions"
-                  className="text-gray-600 hover:text-gray-900 font-medium"
+                  className="text-indigo-600 hover:text-indigo-800 font-medium"
                 >
                   Transactions
                 </a>
@@ -52,8 +53,9 @@ export default async function Home() {
       </nav>
 
       <main className="px-4 sm:px-6 lg:px-8 py-8">
-        <BudgetPage
-          budgetData={budgetData}
+        <TransactionsPageClient
+          initialTransactions={transactions}
+          total={total}
           categories={categories}
           groups={groups}
         />
