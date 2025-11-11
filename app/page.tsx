@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import SignOutButton from '@/components/SignOutButton';
-import BudgetDashboard from '@/components/budget/BudgetDashboard';
-import { getBudgetSummary } from '@/lib/services/budget';
+import BudgetPage from '@/components/BudgetPage';
+import { getBudgetSummary, getCategories } from '@/lib/services/budget';
 
 export default async function Home() {
   const supabase = await createClient();
@@ -15,8 +15,11 @@ export default async function Home() {
     redirect('/login');
   }
 
-  // Fetch budget data
-  const budgetData = await getBudgetSummary(user.id);
+  // Fetch budget data and categories
+  const [budgetData, { groups, categories }] = await Promise.all([
+    getBudgetSummary(user.id),
+    getCategories(user.id),
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -33,7 +36,11 @@ export default async function Home() {
       </nav>
 
       <main className="px-4 sm:px-6 lg:px-8 py-8">
-        <BudgetDashboard budgetData={budgetData} />
+        <BudgetPage
+          budgetData={budgetData}
+          categories={categories}
+          groups={groups}
+        />
       </main>
     </div>
   );
