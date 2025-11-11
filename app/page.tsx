@@ -3,8 +3,13 @@ import { redirect } from 'next/navigation';
 import SignOutButton from '@/components/SignOutButton';
 import BudgetPage from '@/components/BudgetPage';
 import { getBudgetSummary, getCategories } from '@/lib/services/budget';
+import { getCurrentMonth } from '@/lib/utils/date';
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ month?: string }>;
+}) {
   const supabase = await createClient();
 
   const {
@@ -15,9 +20,13 @@ export default async function Home() {
     redirect('/login');
   }
 
+  // Get month from URL query params or use current month
+  const params = await searchParams;
+  const selectedMonth = params.month || getCurrentMonth();
+
   // Fetch budget data and categories
   const [budgetData, { groups, categories }] = await Promise.all([
-    getBudgetSummary(user.id),
+    getBudgetSummary(user.id, selectedMonth),
     getCategories(user.id),
   ]);
 
@@ -56,6 +65,7 @@ export default async function Home() {
           budgetData={budgetData}
           categories={categories}
           groups={groups}
+          currentMonth={selectedMonth}
         />
       </main>
     </div>

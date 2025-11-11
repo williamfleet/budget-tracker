@@ -1,18 +1,22 @@
 import { BudgetSummary } from '@/lib/types/budget';
 import MoneyToAssign from './MoneyToAssign';
 import CategoryGroup from './CategoryGroup';
-import { formatMonth, getCurrentMonth } from '@/lib/utils/date';
+import MonthNavigator from './MonthNavigator';
+import { formatMonth } from '@/lib/utils/date';
 
 interface BudgetDashboardProps {
   budgetData: BudgetSummary;
+  currentMonth: string;
 }
 
-export default function BudgetDashboard({ budgetData }: BudgetDashboardProps) {
-  const currentMonth = getCurrentMonth();
+export default function BudgetDashboard({ budgetData, currentMonth }: BudgetDashboardProps) {
   const formattedMonth = formatMonth(currentMonth);
 
   return (
     <div className="max-w-7xl mx-auto">
+      {/* Month Navigation */}
+      <MonthNavigator currentMonth={currentMonth} />
+
       {/* Money to Assign Section */}
       <MoneyToAssign amount={budgetData.moneyToAssign} month={formattedMonth} />
 

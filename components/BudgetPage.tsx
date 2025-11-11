@@ -13,12 +13,14 @@ interface BudgetPageProps {
   budgetData: BudgetSummary;
   categories: Category[];
   groups: CategoryGroup[];
+  currentMonth: string;
 }
 
 export default function BudgetPage({
   budgetData,
   categories,
   groups,
+  currentMonth,
 }: BudgetPageProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -35,7 +37,7 @@ export default function BudgetPage({
 
   return (
     <>
-      <BudgetDashboard budgetData={budgetData} />
+      <BudgetDashboard budgetData={budgetData} currentMonth={currentMonth} />
       <AddTransactionButton onClick={() => setIsModalOpen(true)} />
       <TransactionForm
         isOpen={isModalOpen}

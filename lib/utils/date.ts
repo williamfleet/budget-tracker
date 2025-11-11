@@ -77,3 +77,25 @@ export function isDateInMonth(dateString: string, monthString: string): boolean 
     date.getMonth() === month.getMonth()
   );
 }
+
+/**
+ * Get the previous month as a string
+ * Example: '2025-11-01' -> '2025-10-01'
+ */
+export function getPreviousMonth(monthString: string): string {
+  const date = parseMonthString(monthString);
+  // Go back one month
+  const prevMonth = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+  return getMonthString(prevMonth);
+}
+
+/**
+ * Get the next month as a string
+ * Example: '2025-11-01' -> '2025-12-01'
+ */
+export function getNextMonth(monthString: string): string {
+  const date = parseMonthString(monthString);
+  // Go forward one month
+  const nextMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+  return getMonthString(nextMonth);
+}

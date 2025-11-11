@@ -11,12 +11,15 @@ import {
 import { getCurrentMonth, getMonthRange } from '@/lib/utils/date';
 
 /**
- * Get the complete budget summary for the current month
+ * Get the complete budget summary for a specific month with rollover
  */
-export async function getBudgetSummary(userId: string): Promise<BudgetSummary> {
+export async function getBudgetSummary(
+  userId: string,
+  month?: string
+): Promise<BudgetSummary> {
   const supabase = await createClient();
-  const currentMonth = getCurrentMonth();
-  const { start, end } = getMonthRange(currentMonth);
+  const targetMonth = month || getCurrentMonth();
+  const { start, end } = getMonthRange(targetMonth);
 
   // Fetch all category groups
   const { data: groups, error: groupsError } = await supabase
@@ -36,48 +39,77 @@ export async function getBudgetSummary(userId: string): Promise<BudgetSummary> {
 
   if (categoriesError) throw categoriesError;
 
-  // Fetch all transactions for the current month
-  const { data: transactions, error: transactionsError } = await supabase
+  // Fetch transactions for current month only (for Activity)
+  const { data: currentMonthTransactions, error: currentTxError } = await supabase
     .from('transactions')
     .select('*')
     .eq('user_id', userId)
     .gte('date', start)
     .lte('date', end);
 
-  if (transactionsError) throw transactionsError;
+  if (currentTxError) throw currentTxError;
 
-  // Fetch all monthly assignments for the current month
-  const { data: assignments, error: assignmentsError } = await supabase
+  // Fetch ALL transactions up to end of this month (for Available rollover)
+  const { data: allTransactions, error: allTxError } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('user_id', userId)
+    .lte('date', end);
+
+  if (allTxError) throw allTxError;
+
+  // Fetch monthly assignments for current month only (for Assigned)
+  const { data: currentMonthAssignments, error: currentAssignError } =
+    await supabase
+      .from('monthly_assignments')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('month', targetMonth);
+
+  if (currentAssignError) throw currentAssignError;
+
+  // Fetch ALL assignments up to and including this month (for Available rollover)
+  const { data: allAssignments, error: allAssignError } = await supabase
     .from('monthly_assignments')
     .select('*')
     .eq('user_id', userId)
-    .eq('month', currentMonth);
+    .lte('month', targetMonth);
 
-  if (assignmentsError) throw assignmentsError;
+  if (allAssignError) throw allAssignError;
 
-  // Calculate Activity per category (sum of spending)
+  // Calculate Activity per category (current month only)
   const activityByCategory = new Map<string, number>();
-  transactions?.forEach((tx: Transaction) => {
+  currentMonthTransactions?.forEach((tx: Transaction) => {
     if (tx.category_id) {
       const current = activityByCategory.get(tx.category_id) || 0;
       activityByCategory.set(tx.category_id, current + tx.amount);
     }
   });
 
-  // Get Assigned amounts per category
+  // Get Assigned amounts per category (current month only)
   const assignedByCategory = new Map<string, number>();
-  assignments?.forEach((assignment: MonthlyAssignment) => {
+  currentMonthAssignments?.forEach((assignment: MonthlyAssignment) => {
     assignedByCategory.set(assignment.category_id, assignment.assigned_amount);
   });
 
-  // Calculate Available per category
-  // For now: Available = Assigned + Activity
-  // TODO: Implement rollover from previous month
+  // Calculate Available per category WITH ROLLOVER
+  // Available = sum(all assignments up to this month) + sum(all transactions up to this month)
   const availableByCategory = new Map<string, number>();
   categories?.forEach((category: Category) => {
-    const assigned = assignedByCategory.get(category.id) || 0;
-    const activity = activityByCategory.get(category.id) || 0;
-    availableByCategory.set(category.id, assigned + activity);
+    // Sum all assignments for this category up to and including target month
+    const totalAssigned =
+      allAssignments
+        ?.filter((a: MonthlyAssignment) => a.category_id === category.id)
+        .reduce((sum, a) => sum + a.assigned_amount, 0) || 0;
+
+    // Sum all transactions for this category up to end of target month
+    const totalActivity =
+      allTransactions
+        ?.filter((tx: Transaction) => tx.category_id === category.id)
+        .reduce((sum, tx) => sum + tx.amount, 0) || 0;
+
+    // Available = Total Assigned + Total Activity (activity is negative for spending)
+    availableByCategory.set(category.id, totalAssigned + totalActivity);
   });
 
   // Build the category group data structure
@@ -126,19 +158,19 @@ export async function getBudgetSummary(userId: string): Promise<BudgetSummary> {
     }
   );
 
-  // Calculate total income (transactions with no category_id and positive amount)
+  // Calculate total income for current month only
   const totalIncome =
-    transactions
+    currentMonthTransactions
       ?.filter((tx: Transaction) => tx.category_id === null && tx.amount > 0)
       .reduce((sum, tx) => sum + tx.amount, 0) || 0;
 
-  // Calculate total assigned across all categories
+  // Calculate total assigned for current month only
   const totalAssigned = groupsData.reduce(
     (sum, group) => sum + group.totalAssigned,
     0
   );
 
-  // Money to Assign = Total Income - Total Assigned
+  // Money to Assign = Total Income - Total Assigned (current month only)
   const moneyToAssign = totalIncome - totalAssigned;
 
   return {
