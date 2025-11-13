@@ -72,7 +72,7 @@ export default function CategoryRow({ category }: CategoryRowProps) {
   };
 
   return (
-    <div className="py-3 px-2 sm:px-4 hover:bg-gray-50 border-b border-gray-100 overflow-x-auto">
+    <div className="py-3 px-2 sm:px-4 hover:bg-gray-50 border-b border-gray-100">
       <div className="flex sm:grid sm:grid-cols-5 sm:gap-4">
         {/* Sticky category column on mobile */}
         <div className="sticky left-0 bg-white hover:bg-gray-50 z-10 w-32 sm:w-auto flex-shrink-0 sm:col-span-1 pr-2 sm:pr-0 flex items-center">
