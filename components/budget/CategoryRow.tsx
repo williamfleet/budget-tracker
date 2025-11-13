@@ -71,53 +71,55 @@ export default function CategoryRow({ category }: CategoryRowProps) {
   };
 
   return (
-    <div className="grid grid-cols-4 gap-4 py-3 px-4 hover:bg-gray-50 border-b border-gray-100">
-      {/* Category Name */}
-      <div className="col-span-1 flex items-center">
-        <span className="text-sm font-medium text-gray-900">
-          {category.name}
-        </span>
-      </div>
+    <div className="py-3 px-2 sm:px-4 hover:bg-gray-50 border-b border-gray-100">
+      <div className="grid grid-cols-4 gap-2 sm:gap-4 min-w-[600px] sm:min-w-0">
+        {/* Category Name */}
+        <div className="col-span-1 flex items-center">
+          <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
+            {category.name}
+          </span>
+        </div>
 
-      {/* Assigned - Editable */}
-      <div className="col-span-1 flex items-center justify-end">
-        {isEditing ? (
-          <div className="flex items-center gap-1">
-            <span className="text-sm text-gray-500">$</span>
-            <input
-              ref={inputRef}
-              type="number"
-              step="0.01"
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onBlur={handleSave}
-              disabled={isSubmitting}
-              className="w-24 px-2 py-1 text-sm text-right border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        ) : (
-          <button
-            onClick={handleStartEdit}
-            className="text-sm text-gray-900 hover:text-indigo-600 hover:bg-indigo-50 px-2 py-1 rounded transition-colors"
-          >
-            {assigned}
-          </button>
-        )}
-      </div>
+        {/* Assigned - Editable */}
+        <div className="col-span-1 flex items-center justify-end">
+          {isEditing ? (
+            <div className="flex items-center gap-1">
+              <span className="text-xs sm:text-sm text-gray-500">$</span>
+              <input
+                ref={inputRef}
+                type="number"
+                step="0.01"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onBlur={handleSave}
+                disabled={isSubmitting}
+                className="w-16 sm:w-24 px-1 sm:px-2 py-1 text-xs sm:text-sm text-right border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          ) : (
+            <button
+              onClick={handleStartEdit}
+              className="text-xs sm:text-sm text-gray-900 hover:text-indigo-600 hover:bg-indigo-50 px-2 py-1 rounded transition-colors min-w-[60px] text-right"
+            >
+              {assigned}
+            </button>
+          )}
+        </div>
 
-      {/* Activity */}
-      <div className="col-span-1 flex items-center justify-end">
-        <span className="text-sm text-gray-600">
-          {category.activity !== 0 ? `-${activity}` : '$0.00'}
-        </span>
-      </div>
+        {/* Activity */}
+        <div className="col-span-1 flex items-center justify-end">
+          <span className="text-xs sm:text-sm text-gray-600">
+            {category.activity !== 0 ? `-${activity}` : '$0.00'}
+          </span>
+        </div>
 
-      {/* Available */}
-      <div className="col-span-1 flex items-center justify-end">
-        <span className={`text-sm font-semibold ${availableColor}`}>
-          {available}
-        </span>
+        {/* Available */}
+        <div className="col-span-1 flex items-center justify-end">
+          <span className={`text-xs sm:text-sm font-semibold ${availableColor}`}>
+            {available}
+          </span>
+        </div>
       </div>
     </div>
   );

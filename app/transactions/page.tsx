@@ -26,33 +26,37 @@ export default async function TransactionsPage() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-8">
-              <h1 className="text-xl font-bold text-gray-900">Epps Budget</h1>
-              <div className="flex gap-4">
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            <div className="flex items-center gap-4 sm:gap-8">
+              <h1 className="text-base sm:text-xl font-bold text-gray-900">
+                Epps Budget
+              </h1>
+              <div className="flex gap-3 sm:gap-4">
                 <a
                   href="/"
-                  className="text-gray-600 hover:text-gray-900 font-medium"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium"
                 >
                   Budget
                 </a>
                 <a
                   href="/transactions"
-                  className="text-indigo-600 hover:text-indigo-800 font-medium"
+                  className="text-sm sm:text-base text-indigo-600 hover:text-indigo-800 font-medium"
                 >
                   Transactions
                 </a>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">{user.email}</span>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <span className="hidden sm:inline text-sm text-gray-600">
+                {user.email}
+              </span>
               <SignOutButton />
             </div>
           </div>
         </div>
       </nav>
 
-      <main className="px-4 sm:px-6 lg:px-8 py-8">
+      <main className="px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         <TransactionsPageClient
           initialTransactions={transactions}
           total={total}
