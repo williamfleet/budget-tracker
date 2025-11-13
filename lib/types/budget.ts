@@ -14,6 +14,7 @@ export interface Category {
   name: string;
   target_amount: number; // in milliunits
   sort_order: number;
+  archived: boolean;
   created_at: string;
 }
 
@@ -62,5 +63,6 @@ export interface BudgetSummary {
   moneyToAssign: number; // in milliunits
   totalIncome: number; // in milliunits
   totalAssigned: number; // in milliunits
+  totalAvailable: number; // in milliunits - sum of all category available balances
   groups: CategoryGroupBudgetData[];
 }

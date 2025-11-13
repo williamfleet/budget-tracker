@@ -30,11 +30,12 @@ export async function getBudgetSummary(
 
   if (groupsError) throw groupsError;
 
-  // Fetch all categories
+  // Fetch all non-archived categories for the budget view
   const { data: categories, error: categoriesError } = await supabase
     .from('categories')
     .select('*')
     .eq('user_id', userId)
+    .eq('archived', false)
     .order('sort_order', { ascending: true });
 
   if (categoriesError) throw categoriesError;
@@ -170,6 +171,12 @@ export async function getBudgetSummary(
     0
   );
 
+  // Calculate total available across all categories
+  const totalAvailable = groupsData.reduce(
+    (sum, group) => sum + group.totalAvailable,
+    0
+  );
+
   // Money to Assign = Total Income - Total Assigned (current month only)
   const moneyToAssign = totalIncome - totalAssigned;
 
@@ -177,6 +184,7 @@ export async function getBudgetSummary(
     moneyToAssign,
     totalIncome,
     totalAssigned,
+    totalAvailable,
     groups: groupsData,
   };
 }

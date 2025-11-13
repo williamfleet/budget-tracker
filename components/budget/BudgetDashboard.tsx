@@ -18,7 +18,11 @@ export default function BudgetDashboard({ budgetData, currentMonth }: BudgetDash
       <MonthNavigator currentMonth={currentMonth} />
 
       {/* Money to Assign Section */}
-      <MoneyToAssign amount={budgetData.moneyToAssign} month={formattedMonth} />
+      <MoneyToAssign
+        amount={budgetData.moneyToAssign}
+        totalAvailable={budgetData.totalAvailable}
+        month={formattedMonth}
+      />
 
       {/* Category Groups */}
       <div className="space-y-4">

@@ -18,6 +18,7 @@ export default function CategoryRow({ category }: CategoryRowProps) {
   const assigned = formatCurrency(category.assigned);
   const activity = formatCurrency(Math.abs(category.activity));
   const available = formatCurrency(category.available);
+  const target = formatCurrency(category.target_amount);
 
   // Color coding for available balance
   const availableColor =
@@ -71,54 +72,64 @@ export default function CategoryRow({ category }: CategoryRowProps) {
   };
 
   return (
-    <div className="py-3 px-2 sm:px-4 hover:bg-gray-50 border-b border-gray-100">
-      <div className="grid grid-cols-4 gap-2 sm:gap-4 min-w-[600px] sm:min-w-0">
-        {/* Category Name */}
-        <div className="col-span-1 flex items-center">
+    <div className="py-3 px-2 sm:px-4 hover:bg-gray-50 border-b border-gray-100 overflow-x-auto">
+      <div className="flex sm:grid sm:grid-cols-5 sm:gap-4">
+        {/* Sticky category column on mobile */}
+        <div className="sticky left-0 bg-white hover:bg-gray-50 z-10 w-32 sm:w-auto flex-shrink-0 sm:col-span-1 pr-2 sm:pr-0 flex items-center">
           <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
             {category.name}
           </span>
         </div>
 
-        {/* Assigned - Editable */}
-        <div className="col-span-1 flex items-center justify-end">
-          {isEditing ? (
-            <div className="flex items-center gap-1">
-              <span className="text-xs sm:text-sm text-gray-500">$</span>
-              <input
-                ref={inputRef}
-                type="number"
-                step="0.01"
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onBlur={handleSave}
-                disabled={isSubmitting}
-                className="w-16 sm:w-24 px-1 sm:px-2 py-1 text-xs sm:text-sm text-right border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-          ) : (
-            <button
-              onClick={handleStartEdit}
-              className="text-xs sm:text-sm text-gray-900 hover:text-indigo-600 hover:bg-indigo-50 px-2 py-1 rounded transition-colors min-w-[60px] text-right"
-            >
-              {assigned}
-            </button>
-          )}
-        </div>
+        {/* Scrollable columns */}
+        <div className="flex gap-8 sm:gap-0 sm:contents">
+          {/* Assigned - Editable */}
+          <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
+            {isEditing ? (
+              <div className="flex items-center gap-1">
+                <span className="text-xs sm:text-sm text-gray-500">$</span>
+                <input
+                  ref={inputRef}
+                  type="number"
+                  step="0.01"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  onBlur={handleSave}
+                  disabled={isSubmitting}
+                  className="w-16 sm:w-24 px-1 sm:px-2 py-1 text-xs sm:text-sm text-right border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+            ) : (
+              <button
+                onClick={handleStartEdit}
+                className="text-xs sm:text-sm text-gray-900 hover:text-indigo-600 hover:bg-indigo-50 px-2 py-1 rounded transition-colors min-w-[60px] text-right"
+              >
+                {assigned}
+              </button>
+            )}
+          </div>
 
-        {/* Activity */}
-        <div className="col-span-1 flex items-center justify-end">
-          <span className="text-xs sm:text-sm text-gray-600">
-            {category.activity !== 0 ? `-${activity}` : '$0.00'}
-          </span>
-        </div>
+          {/* Activity */}
+          <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
+            <span className="text-xs sm:text-sm text-gray-600">
+              {category.activity !== 0 ? `-${activity}` : '$0.00'}
+            </span>
+          </div>
 
-        {/* Available */}
-        <div className="col-span-1 flex items-center justify-end">
-          <span className={`text-xs sm:text-sm font-semibold ${availableColor}`}>
-            {available}
-          </span>
+          {/* Available */}
+          <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
+            <span className={`text-xs sm:text-sm font-semibold ${availableColor}`}>
+              {available}
+            </span>
+          </div>
+
+          {/* Target */}
+          <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end pr-2 sm:pr-0">
+            <span className="text-xs sm:text-sm text-gray-500">
+              {target}
+            </span>
+          </div>
         </div>
       </div>
     </div>
