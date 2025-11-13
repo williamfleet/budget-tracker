@@ -82,9 +82,9 @@ export default function CategoryRow({ category }: CategoryRowProps) {
         </div>
 
         {/* Scrollable columns */}
-        <div className="flex gap-8 sm:gap-0 sm:contents">
+        <div className="flex gap-6 sm:gap-0 sm:contents">
           {/* Assigned - Editable */}
-          <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
+          <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
             {isEditing ? (
               <div className="flex items-center gap-1">
                 <span className="text-xs sm:text-sm text-gray-500">$</span>
@@ -111,21 +111,21 @@ export default function CategoryRow({ category }: CategoryRowProps) {
           </div>
 
           {/* Activity */}
-          <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
+          <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
             <span className="text-xs sm:text-sm text-gray-600">
               {category.activity !== 0 ? `-${activity}` : '$0.00'}
             </span>
           </div>
 
           {/* Available */}
-          <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
+          <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
             <span className={`text-xs sm:text-sm font-semibold ${availableColor}`}>
               {available}
             </span>
           </div>
 
           {/* Target */}
-          <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end pr-2 sm:pr-0">
+          <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end pr-2 sm:pr-0">
             <span className="text-xs sm:text-sm text-gray-500">
               {target}
             </span>

@@ -35,23 +35,23 @@ export default function CategoryGroup({ group }: CategoryGroupProps) {
               </h3>
             </div>
             {/* Scrollable columns */}
-            <div className="flex gap-8 sm:gap-0 sm:contents">
-              <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
+            <div className="flex gap-6 sm:gap-0 sm:contents">
+              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
                 <span className="text-xs font-semibold text-gray-600">
                   {totalAssigned}
                 </span>
               </div>
-              <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
+              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
                 <span className="text-xs font-semibold text-gray-600">
                   {group.totalActivity !== 0 ? `-${totalActivity}` : '$0.00'}
                 </span>
               </div>
-              <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
+              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
                 <span className={`text-xs font-bold ${availableColor}`}>
                   {totalAvailable}
                 </span>
               </div>
-              <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 text-right pr-2 sm:pr-0">
+              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right pr-2 sm:pr-0">
                 <span className="text-xs font-semibold text-gray-500">
                   {totalTarget}
                 </span>
@@ -70,23 +70,23 @@ export default function CategoryGroup({ group }: CategoryGroupProps) {
               </span>
             </div>
             {/* Scrollable headers */}
-            <div className="flex gap-8 sm:gap-0 sm:contents">
-              <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
+            <div className="flex gap-6 sm:gap-0 sm:contents">
+              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
                 <span className="text-xs font-semibold text-gray-600 uppercase">
                   Assigned
                 </span>
               </div>
-              <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
+              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
                 <span className="text-xs font-semibold text-gray-600 uppercase">
                   Activity
                 </span>
               </div>
-              <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
+              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
                 <span className="text-xs font-semibold text-gray-600 uppercase">
                   Available
                 </span>
               </div>
-              <div className="w-24 sm:w-auto flex-shrink-0 sm:col-span-1 text-right pr-2 sm:pr-0">
+              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right pr-2 sm:pr-0">
                 <span className="text-xs font-semibold text-gray-600 uppercase">
                   Target
                 </span>
