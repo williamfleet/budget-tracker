@@ -20,35 +20,17 @@ export default function CategoryRow({ category }: CategoryRowProps) {
   const available = formatCurrency(category.available);
   const target = formatCurrency(category.target_amount);
 
-  // Calculate progress towards target
+  // Calculate progress towards target (Assigned vs Target)
   const targetAmount = category.target_amount;
+  const assignedAmount = category.assigned;
   const availableAmount = category.available;
   const progressPercentage = targetAmount > 0
-    ? Math.min((availableAmount / targetAmount) * 100, 100)
+    ? Math.min((assignedAmount / targetAmount) * 100, 100)
     : 0;
 
-  // Color coding based on target progress
-  const getProgressColor = () => {
-    if (targetAmount === 0) {
-      // No target set - use old available color logic
-      return category.available > 0
-        ? 'text-green-600'
-        : category.available < 0
-        ? 'text-red-600'
-        : 'text-gray-600';
-    }
-
-    if (availableAmount >= targetAmount) {
-      return 'text-green-600'; // Met or exceeded target
-    } else if (progressPercentage >= 50) {
-      return 'text-yellow-600'; // In progress (50%+)
-    } else {
-      return 'text-red-600'; // Below target (<50%)
-    }
-  };
-
+  // Progress bar color based on assigned vs target
   const getProgressBarColor = () => {
-    if (availableAmount >= targetAmount) {
+    if (assignedAmount >= targetAmount) {
       return 'bg-green-500';
     } else if (progressPercentage >= 50) {
       return 'bg-yellow-500';
@@ -57,7 +39,13 @@ export default function CategoryRow({ category }: CategoryRowProps) {
     }
   };
 
-  const availableColor = getProgressColor();
+  // Available amount color (always based on available balance)
+  const availableColor =
+    category.available > 0
+      ? 'text-green-600'
+      : category.available < 0
+      ? 'text-red-600'
+      : 'text-gray-600';
 
   // Focus input when entering edit mode
   useEffect(() => {
