@@ -27,7 +27,7 @@ export default function CategoryGroup({ group }: CategoryGroupProps) {
       <div className="overflow-x-auto">
         {/* Group Header - Sticky category column on mobile */}
         <div className="bg-gray-50 border-b border-gray-200">
-          <div className="flex sm:grid sm:grid-cols-5 sm:gap-4 px-2 sm:px-4 py-3">
+          <div className="flex sm:grid sm:grid-cols-6 sm:gap-4 px-2 sm:px-4 py-3">
             {/* Sticky category column on mobile */}
             <div className="sticky left-0 bg-gray-50 z-10 w-32 sm:w-auto flex-shrink-0 sm:col-span-1 pr-2 sm:pr-0">
               <h3 className="text-xs sm:text-sm font-bold text-gray-900 uppercase tracking-wide">
@@ -51,9 +51,14 @@ export default function CategoryGroup({ group }: CategoryGroupProps) {
                   {totalAvailable}
                 </span>
               </div>
-              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right pr-2 sm:pr-0">
+              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
                 <span className="text-xs font-semibold text-gray-500">
                   {totalTarget}
+                </span>
+              </div>
+              <div className="w-16 sm:w-auto flex-shrink-0 sm:col-span-1 text-center pr-2 sm:pr-0">
+                <span className="text-xs font-semibold text-gray-500">
+                  {/* Empty for Date column in header */}
                 </span>
               </div>
             </div>
@@ -62,7 +67,7 @@ export default function CategoryGroup({ group }: CategoryGroupProps) {
 
         {/* Column Headers - Sticky category column on mobile */}
         <div className="bg-gray-100 border-b border-gray-200">
-          <div className="flex sm:grid sm:grid-cols-5 sm:gap-4 px-2 sm:px-4 py-2">
+          <div className="flex sm:grid sm:grid-cols-6 sm:gap-4 px-2 sm:px-4 py-2">
             {/* Sticky header */}
             <div className="sticky left-0 bg-gray-100 z-10 w-32 sm:w-auto flex-shrink-0 sm:col-span-1 pr-2 sm:pr-0">
               <span className="text-xs font-semibold text-gray-600 uppercase">
@@ -86,9 +91,14 @@ export default function CategoryGroup({ group }: CategoryGroupProps) {
                   Available
                 </span>
               </div>
-              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right pr-2 sm:pr-0">
+              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
                 <span className="text-xs font-semibold text-gray-600 uppercase">
                   Target
+                </span>
+              </div>
+              <div className="w-16 sm:w-auto flex-shrink-0 sm:col-span-1 text-center pr-2 sm:pr-0">
+                <span className="text-xs font-semibold text-gray-600 uppercase">
+                  Date
                 </span>
               </div>
             </div>

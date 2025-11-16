@@ -41,12 +41,16 @@ export default function CategoriesPageClient({
         id: data.id,
         name: data.name,
         target_amount: data.target_amount,
+        charge_day: data.charge_day,
+        is_checking: data.is_checking,
       });
     } else {
       await createCategory({
         name: data.name,
         group_id: data.group_id,
         target_amount: data.target_amount,
+        charge_day: data.charge_day,
+        is_checking: data.is_checking,
       });
     }
   };

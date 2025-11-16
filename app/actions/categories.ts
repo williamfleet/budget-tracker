@@ -8,12 +8,16 @@ interface CreateCategoryInput {
   name: string;
   group_id: string;
   target_amount: string; // in dollars
+  charge_day: string; // day of month
+  is_checking: boolean;
 }
 
 interface UpdateCategoryInput {
   id: string;
   name: string;
   target_amount: string; // in dollars
+  charge_day: string; // day of month
+  is_checking: boolean;
 }
 
 export async function createCategory(input: CreateCategoryInput) {
@@ -28,12 +32,15 @@ export async function createCategory(input: CreateCategoryInput) {
   }
 
   const targetInMilliunits = dollarsToMilliunits(parseFloat(input.target_amount));
+  const chargeDayValue = input.charge_day ? parseInt(input.charge_day) : null;
 
   const { error } = await supabase.from('categories').insert({
     user_id: user.id,
     group_id: input.group_id,
     name: input.name,
     target_amount: targetInMilliunits,
+    charge_day: chargeDayValue,
+    is_checking: input.is_checking,
   });
 
   if (error) {
@@ -57,12 +64,15 @@ export async function updateCategory(input: UpdateCategoryInput) {
   }
 
   const targetInMilliunits = dollarsToMilliunits(parseFloat(input.target_amount));
+  const chargeDayValue = input.charge_day ? parseInt(input.charge_day) : null;
 
   const { error } = await supabase
     .from('categories')
     .update({
       name: input.name,
       target_amount: targetInMilliunits,
+      charge_day: chargeDayValue,
+      is_checking: input.is_checking,
     })
     .eq('id', input.id)
     .eq('user_id', user.id);

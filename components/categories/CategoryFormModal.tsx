@@ -17,6 +17,8 @@ export interface CategoryFormData {
   name: string;
   group_id: string;
   target_amount: string;
+  charge_day: string;
+  is_checking: boolean;
 }
 
 export default function CategoryFormModal({
@@ -29,6 +31,8 @@ export default function CategoryFormModal({
   const [name, setName] = useState('');
   const [groupId, setGroupId] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
+  const [chargeDay, setChargeDay] = useState('');
+  const [isChecking, setIsChecking] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -40,10 +44,14 @@ export default function CategoryFormModal({
       setName(category.name);
       setGroupId(category.group_id);
       setTargetAmount(milliunitsToDollars(category.target_amount).toFixed(2));
+      setChargeDay(category.charge_day ? category.charge_day.toString() : '');
+      setIsChecking(category.is_checking || false);
     } else {
       setName('');
       setGroupId(groups[0]?.id || '');
       setTargetAmount('0.00');
+      setChargeDay('');
+      setIsChecking(false);
     }
   }, [category, groups]);
 
@@ -70,12 +78,16 @@ export default function CategoryFormModal({
         name: name.trim(),
         group_id: groupId,
         target_amount: targetAmount,
+        charge_day: chargeDay,
+        is_checking: isChecking,
       });
 
       // Reset form
       setName('');
       setGroupId(groups[0]?.id || '');
       setTargetAmount('0.00');
+      setChargeDay('');
+      setIsChecking(false);
       onClose();
     } catch (err) {
       setError('Failed to save category');
@@ -189,6 +201,47 @@ export default function CategoryFormModal({
             </div>
             <p className="text-xs text-gray-500 mt-1">
               The amount you plan to budget for this category each month
+            </p>
+          </div>
+
+          {/* Charge Day */}
+          <div>
+            <label
+              htmlFor="chargeDay"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Charge Day (Optional)
+            </label>
+            <input
+              type="number"
+              id="chargeDay"
+              min="1"
+              max="31"
+              value={chargeDay}
+              onChange={(e) => setChargeDay(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Day of month (1-31)"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              The day of the month when this charge typically occurs
+            </p>
+          </div>
+
+          {/* Is Checking Account Expense */}
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={isChecking}
+                onChange={(e) => setIsChecking(e.target.checked)}
+                className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+              />
+              <span className="text-sm font-medium text-gray-700">
+                Checking Account Expense
+              </span>
+            </label>
+            <p className="text-xs text-gray-500 mt-1 ml-6">
+              Mark this if the expense needs to be prioritized for checking account funding
             </p>
           </div>
 

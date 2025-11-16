@@ -128,6 +128,8 @@ export async function getBudgetSummary(
             name: cat.name,
             target_amount: cat.target_amount,
             sort_order: cat.sort_order,
+            charge_day: cat.charge_day,
+            is_checking: cat.is_checking,
             assigned,
             activity,
             available,

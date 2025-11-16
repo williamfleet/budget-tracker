@@ -15,6 +15,8 @@ export interface Category {
   target_amount: number; // in milliunits
   sort_order: number;
   archived: boolean;
+  charge_day: number | null; // Day of month (1-31) when charge typically occurs
+  is_checking: boolean; // Whether this is a checking account expense
   created_at: string;
 }
 
@@ -44,6 +46,8 @@ export interface CategoryBudgetData {
   name: string;
   target_amount: number; // in milliunits
   sort_order: number;
+  charge_day: number | null; // Day of month (1-31) when charge typically occurs
+  is_checking: boolean; // Whether this is a checking account expense
   assigned: number; // in milliunits - money budgeted TO this category this month
   activity: number; // in milliunits - total spending FROM this category this month (negative)
   available: number; // in milliunits - remaining balance (rolls over)
