@@ -67,11 +67,27 @@ export default function CategoryRow({ category }: CategoryRowProps) {
 
   const handleSave = async () => {
     setIsSubmitting(true);
+
+    // Store previous value for undo
+    const previousValue = milliunitsToDollars(category.assigned).toFixed(2);
+
     try {
       await updateAssignment({
         category_id: category.id,
         amount: editValue,
       });
+
+      // Emit event for undo/redo tracking with old and new values
+      window.dispatchEvent(
+        new CustomEvent('assignmentChange', {
+          detail: {
+            category_id: category.id,
+            oldAmount: previousValue,
+            newAmount: editValue
+          },
+        })
+      );
+
       setIsEditing(false);
       setEditValue('');
     } catch (error) {
@@ -99,15 +115,30 @@ export default function CategoryRow({ category }: CategoryRowProps) {
     // Don't fill if already at or above target
     if (amountNeeded <= 0) return;
 
+    // Store previous value for undo
+    const previousValue = milliunitsToDollars(category.assigned).toFixed(2);
+
     // Calculate new assignment: current assigned + amount needed
     const newAssignment = category.assigned + amountNeeded;
+    const newAmount = milliunitsToDollars(newAssignment).toFixed(2);
 
     setIsSubmitting(true);
     try {
       await updateAssignment({
         category_id: category.id,
-        amount: milliunitsToDollars(newAssignment).toFixed(2),
+        amount: newAmount,
       });
+
+      // Emit event for undo/redo tracking with old and new values
+      window.dispatchEvent(
+        new CustomEvent('assignmentChange', {
+          detail: {
+            category_id: category.id,
+            oldAmount: previousValue,
+            newAmount: newAmount
+          },
+        })
+      );
     } catch (error) {
       console.error('Failed to fill to target:', error);
       alert('Failed to fill to target. Please try again.');

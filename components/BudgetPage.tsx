@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { BudgetSummary, Category, CategoryGroup } from '@/lib/types/budget';
 import { Account } from '@/lib/types/accounts';
-import BudgetDashboard from './budget/BudgetDashboard';
+import BudgetDashboardWithUndo from './budget/BudgetDashboardWithUndo';
 import AddTransactionButton from './transactions/AddTransactionButton';
 import TransactionForm, {
   TransactionFormData,
@@ -52,7 +52,7 @@ export default function BudgetPage({
 
   return (
     <>
-      <BudgetDashboard budgetData={budgetData} currentMonth={currentMonth} />
+      <BudgetDashboardWithUndo budgetData={budgetData} currentMonth={currentMonth} />
       <AddTransactionButton onClick={() => setIsModalOpen(true)} />
       <TransactionForm
         isOpen={isModalOpen}

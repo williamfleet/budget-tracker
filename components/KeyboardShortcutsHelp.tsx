@@ -26,6 +26,8 @@ export default function KeyboardShortcutsHelp({
         { keys: ['?'], description: 'Show keyboard shortcuts' },
         { keys: ['D'], description: 'Toggle dark mode' },
         { keys: ['Esc'], description: 'Close modal' },
+        { keys: ['Cmd/Ctrl', 'Z'], description: 'Undo budget change' },
+        { keys: ['Cmd/Ctrl', 'Shift', 'Z'], description: 'Redo budget change' },
       ],
     },
     {
