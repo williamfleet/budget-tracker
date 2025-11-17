@@ -8,12 +8,16 @@ interface TransactionRowProps {
   transaction: TransactionWithCategory;
   onEdit: (transaction: TransactionWithCategory) => void;
   onDelete: (id: string) => void;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
 }
 
 export default function TransactionRow({
   transaction,
   onEdit,
   onDelete,
+  isSelected = false,
+  onToggleSelect,
 }: TransactionRowProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -35,10 +39,22 @@ export default function TransactionRow({
   };
 
   return (
-    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
+    <tr className={`hover:bg-gray-50 dark:hover:bg-gray-700 ${isSelected ? 'bg-indigo-50 dark:bg-indigo-900/20' : 'dark:bg-gray-900'}`}>
+      {/* Checkbox */}
+      {onToggleSelect && (
+        <td className="px-6 py-4 whitespace-nowrap">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => onToggleSelect(transaction.id)}
+            className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+          />
+        </td>
+      )}
+
       {/* Date */}
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-        {new Date(transaction.date).toLocaleDateString('en-US', {
+        {new Date(transaction.date + 'T00:00:00').toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
           year: 'numeric',

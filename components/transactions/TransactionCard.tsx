@@ -8,12 +8,16 @@ interface TransactionCardProps {
   transaction: TransactionWithCategory;
   onEdit: (transaction: TransactionWithCategory) => void;
   onDelete: (id: string) => void;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
 }
 
 export default function TransactionCard({
   transaction,
   onEdit,
   onDelete,
+  isSelected = false,
+  onToggleSelect,
 }: TransactionCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -35,12 +39,21 @@ export default function TransactionCard({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
-      {/* Top row: Date and Amount */}
-      <div className="flex items-start justify-between mb-3">
+    <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow ${isSelected ? 'ring-2 ring-indigo-500' : ''}`}>
+      {/* Checkbox and Top row */}
+      <div className="flex items-start gap-3 mb-3">
+        {onToggleSelect && (
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => onToggleSelect(transaction.id)}
+            className="w-4 h-4 mt-1 text-indigo-600 rounded focus:ring-indigo-500"
+          />
+        )}
+        <div className="flex-1 flex items-start justify-between">
         <div>
           <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1">
-            {new Date(transaction.date).toLocaleDateString('en-US', {
+            {new Date(transaction.date + 'T00:00:00').toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
               year: 'numeric',
@@ -54,6 +67,7 @@ export default function TransactionCard({
           {isIncome ? '+' : '-'}
           {formattedAmount}
         </p>
+        </div>
       </div>
 
       {/* Category */}
