@@ -58,6 +58,12 @@ export default async function Home({
                 >
                   Categories
                 </a>
+                <a
+                  href="/reports"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium"
+                >
+                  Reports
+                </a>
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">

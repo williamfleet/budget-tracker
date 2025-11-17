@@ -1,11 +1,14 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import SignOutButton from '@/components/SignOutButton';
-import TransactionsPageClient from '@/components/transactions/TransactionsPageClient';
-import { getTransactions } from '@/lib/services/transactions';
-import { getCategories } from '@/lib/services/budget';
+import ReportsPageClient from '@/components/reports/ReportsPageClient';
+import {
+  getSpendingByCategory,
+  getMonthlyTrends,
+  getIncomeVsExpenses,
+} from '@/lib/services/reports';
 
-export default async function TransactionsPage() {
+export default async function ReportsPage() {
   const supabase = await createClient();
 
   const {
@@ -16,11 +19,27 @@ export default async function TransactionsPage() {
     redirect('/login');
   }
 
-  // Fetch transactions and categories
-  const [{ transactions, total }, { groups, categories }] = await Promise.all([
-    getTransactions(user.id),
-    getCategories(user.id),
-  ]);
+  // Default to current month
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    .toISOString()
+    .split('T')[0];
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    .toISOString()
+    .split('T')[0];
+
+  // Fetch report data
+  const spendingByCategory = await getSpendingByCategory(
+    user.id,
+    startOfMonth,
+    endOfMonth
+  );
+  const monthlyTrends = await getMonthlyTrends(user.id, 6);
+  const incomeVsExpenses = await getIncomeVsExpenses(
+    user.id,
+    startOfMonth,
+    endOfMonth
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,7 +59,7 @@ export default async function TransactionsPage() {
                 </a>
                 <a
                   href="/transactions"
-                  className="text-sm sm:text-base text-indigo-600 hover:text-indigo-800 font-medium"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium"
                 >
                   Transactions
                 </a>
@@ -52,7 +71,7 @@ export default async function TransactionsPage() {
                 </a>
                 <a
                   href="/reports"
-                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium"
+                  className="text-sm sm:text-base text-indigo-600 hover:text-indigo-800 font-medium"
                 >
                   Reports
                 </a>
@@ -69,11 +88,10 @@ export default async function TransactionsPage() {
       </nav>
 
       <main className="px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <TransactionsPageClient
-          initialTransactions={transactions}
-          total={total}
-          categories={categories}
-          groups={groups}
+        <ReportsPageClient
+          initialSpendingByCategory={spendingByCategory}
+          initialMonthlyTrends={monthlyTrends}
+          initialIncomeVsExpenses={incomeVsExpenses}
         />
       </main>
     </div>
