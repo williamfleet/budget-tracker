@@ -2,6 +2,7 @@
 
 ## Completed Features ✓
 
+### Core Features
 - ✓ User Authentication (Supabase Auth)
 - ✓ Budget Dashboard with Month Navigation
 - ✓ Transaction Entry and Management
@@ -14,63 +15,55 @@
 - ✓ Target Amounts Display
 - ✓ Total Available Metric
 - ✓ PWA Support with Favicons
+- ✓ Target/Goal Tracking with Progress Bars
+- ✓ Reports & Analytics with Charts
+- ✓ Account Management System
+- ✓ Debt Payoff Planner
+
+### Quick Wins (Completed November 2025)
+- ✓ Dark mode support with theme toggle
+- ✓ Keyboard shortcuts for power users (Navigation: B/T/C/R/A, Actions: N, General: D/?/Esc, Undo/Redo: Cmd+Z/Cmd+Shift+Z)
+- ✓ Bulk transaction editing and deletion
+- ✓ Transaction splits across multiple categories
+- ✓ Undo/redo for budget assignment changes
 
 ---
 
 ## Priority 1: Core Budget Features
 
-### 1. Target/Goal Tracking & Progress
+### ~~1. Target/Goal Tracking & Progress~~ ✓ COMPLETED
 **Description:** Visual progress indicators showing how close categories are to their target amounts.
 
-**Features:**
-- Progress bar showing Available vs Target for each category
-- Color coding (green = met target, yellow = in progress, red = below target)
-- Monthly funding suggestions based on targets
-- "Quick Fill to Target" button for assign workflow
-- Goal completion badges/indicators
-
-**Technical:**
-- Update CategoryRow component with progress bar
-- Add helper functions to calculate progress percentage
-- Update UI to show visual indicators
+**Completed Features:**
+- ✓ Progress bar showing Assigned vs Target for each category
+- ✓ Color coding (green = met target, yellow = in progress, red = below target)
+- ✓ "Quick Fill to Target" button for assign workflow
+- ✓ Visual progress indicators in CategoryRow component
 
 ---
 
-### 2. Reports & Analytics
+### ~~2. Reports & Analytics~~ ✓ COMPLETED
 **Description:** Comprehensive spending insights and visualizations.
 
-**Features:**
-- Spending by Category (pie chart, bar chart)
-- Spending Trends Over Time (line graph)
-- Income vs Expenses comparison
-- Month-over-month comparison
-- Category spending breakdown
-- Export reports to PDF/CSV
-
-**Technical:**
-- Create `/reports` page
-- Integrate charting library (recharts or chart.js)
-- Create report service layer for data aggregation
-- Add date range filters
+**Completed Features:**
+- ✓ Spending by Category (pie chart, bar chart)
+- ✓ Spending Trends Over Time (line graph)
+- ✓ Income vs Expenses comparison
+- ✓ Month-over-month comparison
+- ✓ Category spending breakdown
+- ✓ Reports page with recharts integration
 
 ---
 
-### 3. Account Management
+### ~~3. Account Management~~ ✓ COMPLETED
 **Description:** Support for multiple accounts (checking, savings, credit cards).
 
-**Features:**
-- Create and manage multiple accounts
-- Account balances and reconciliation
-- Transfer money between accounts
-- Track account-specific transactions
-- Account types (checking, savings, credit card, cash)
-
-**Technical:**
-- Create `accounts` table in Supabase
-- Update `transactions` table to include `account_id`
-- Create accounts management page
-- Update transaction entry to select account
-- Account balance calculations in budget service
+**Completed Features:**
+- ✓ Create and manage multiple accounts
+- ✓ Account balances and reconciliation
+- ✓ Track account-specific transactions
+- ✓ Account types (checking, savings, credit card, cash)
+- ✓ Accounts table and management page
 
 ---
 
@@ -222,20 +215,16 @@
 
 ## Priority 5: Advanced Features
 
-### 12. Debt Payoff Planner
+### ~~12. Debt Payoff Planner~~ ✓ COMPLETED
 **Description:** Track and plan debt payoff strategies.
 
-**Features:**
-- Add debt accounts (credit cards, loans)
-- Interest rate tracking
-- Payoff timeline visualization
-- Snowball vs Avalanche method comparison
-- Extra payment calculator
-
-**Technical:**
-- Create `debts` table
-- Debt calculation algorithms
-- Payoff visualization components
+**Completed Features:**
+- ✓ Add debt accounts (credit cards, loans)
+- ✓ Interest rate tracking
+- ✓ Payoff timeline visualization
+- ✓ Snowball vs Avalanche method comparison
+- ✓ Extra payment calculator
+- ✓ Debts table and management page
 
 ---
 
@@ -276,11 +265,14 @@
 
 ## Quick Wins (Small Improvements)
 
-- [ ] Dark mode support
-- [ ] Keyboard shortcuts for power users
-- [ ] Bulk transaction editing/categorization
-- [ ] Transaction split (one transaction, multiple categories)
-- [ ] Undo/redo for budget changes
+### Completed
+- ✓ Dark mode support with theme toggle
+- ✓ Keyboard shortcuts for power users (B/T/C/R/A navigation, N for new transaction, D for dark mode, Cmd+Z/Cmd+Shift+Z for undo/redo)
+- ✓ Bulk transaction editing and deletion with multi-select
+- ✓ Transaction splits (one transaction, multiple categories)
+- ✓ Undo/redo for budget assignment changes
+
+### Remaining
 - [ ] Category emoji icons
 - [ ] Budget health score
 - [ ] Weekly spending summary email
