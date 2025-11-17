@@ -73,7 +73,11 @@ export default function TransactionCard({
       {/* Category */}
       <div className="mb-3">
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          {transaction.category_name || (
+          {transaction.is_split ? (
+            <span className="text-indigo-600 dark:text-indigo-400 font-medium">Split Transaction</span>
+          ) : transaction.category_name ? (
+            transaction.category_name
+          ) : (
             <span className="text-green-600 dark:text-green-400 font-medium">Income</span>
           )}
         </p>

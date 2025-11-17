@@ -46,6 +46,7 @@ export default function BudgetPage({
       category_id: formData.category_id,
       account_id: formData.account_id || null,
       memo: formData.memo || null,
+      splits: formData.splits,
     });
   };
 

@@ -1,8 +1,18 @@
 import { createClient } from '@/lib/supabase/server';
 import { Transaction } from '@/lib/types/budget';
 
+export interface TransactionSplit {
+  id: string;
+  category_id: string;
+  amount: number;
+  memo: string | null;
+  category_name: string | null;
+}
+
 export interface TransactionWithCategory extends Transaction {
   category_name: string | null;
+  splits?: TransactionSplit[];
+  is_split?: boolean;
 }
 
 export interface GetTransactionsOptions {
@@ -69,19 +79,45 @@ export async function getTransactions(
     throw error;
   }
 
-  // Transform data to include category_name
-  const transactions: TransactionWithCategory[] = (data || []).map((tx: any) => ({
-    id: tx.id,
-    user_id: tx.user_id,
-    category_id: tx.category_id,
-    account_id: tx.account_id,
-    date: tx.date,
-    payee: tx.payee,
-    amount: tx.amount,
-    memo: tx.memo,
-    created_at: tx.created_at,
-    category_name: tx.categories?.name || null,
-  }));
+  // Fetch splits for all transactions
+  const transactionIds = (data || []).map((tx: any) => tx.id);
+  let splitsData: any[] = [];
+
+  if (transactionIds.length > 0) {
+    const { data: splits } = await supabase
+      .from('transaction_splits')
+      .select('*, categories(name)')
+      .in('transaction_id', transactionIds);
+
+    splitsData = splits || [];
+  }
+
+  // Transform data to include category_name and splits
+  const transactions: TransactionWithCategory[] = (data || []).map((tx: any) => {
+    const txSplits = splitsData.filter((s: any) => s.transaction_id === tx.id);
+    const hasSplits = txSplits.length > 0;
+
+    return {
+      id: tx.id,
+      user_id: tx.user_id,
+      category_id: tx.category_id,
+      account_id: tx.account_id,
+      date: tx.date,
+      payee: tx.payee,
+      amount: tx.amount,
+      memo: tx.memo,
+      created_at: tx.created_at,
+      category_name: tx.categories?.name || null,
+      is_split: hasSplits,
+      splits: hasSplits ? txSplits.map((s: any) => ({
+        id: s.id,
+        category_id: s.category_id,
+        amount: s.amount,
+        memo: s.memo,
+        category_name: s.categories?.name || null,
+      })) : undefined,
+    };
+  });
 
   return {
     transactions,

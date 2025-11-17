@@ -59,6 +59,25 @@ export async function getBudgetSummary(
 
   if (allTxError) throw allTxError;
 
+  // Fetch transaction splits for current month (for Activity)
+  const { data: currentMonthSplits, error: currentSplitsError } = await supabase
+    .from('transaction_splits')
+    .select('*, transactions!inner(date)')
+    .eq('user_id', userId)
+    .gte('transactions.date', start)
+    .lte('transactions.date', end);
+
+  if (currentSplitsError) throw currentSplitsError;
+
+  // Fetch ALL transaction splits up to end of this month (for Available rollover)
+  const { data: allSplits, error: allSplitsError } = await supabase
+    .from('transaction_splits')
+    .select('*, transactions!inner(date)')
+    .eq('user_id', userId)
+    .lte('transactions.date', end);
+
+  if (allSplitsError) throw allSplitsError;
+
   // Fetch monthly assignments for current month only (for Assigned)
   const { data: currentMonthAssignments, error: currentAssignError } =
     await supabase
@@ -87,6 +106,12 @@ export async function getBudgetSummary(
     }
   });
 
+  // Add split transaction activity
+  currentMonthSplits?.forEach((split: any) => {
+    const current = activityByCategory.get(split.category_id) || 0;
+    activityByCategory.set(split.category_id, current + split.amount);
+  });
+
   // Get Assigned amounts per category (current month only)
   const assignedByCategory = new Map<string, number>();
   currentMonthAssignments?.forEach((assignment: MonthlyAssignment) => {
@@ -109,8 +134,14 @@ export async function getBudgetSummary(
         ?.filter((tx: Transaction) => tx.category_id === category.id)
         .reduce((sum, tx) => sum + tx.amount, 0) || 0;
 
-    // Available = Total Assigned + Total Activity (activity is negative for spending)
-    availableByCategory.set(category.id, totalAssigned + totalActivity);
+    // Sum all split transactions for this category up to end of target month
+    const totalSplitActivity =
+      allSplits
+        ?.filter((split: any) => split.category_id === category.id)
+        .reduce((sum, split) => sum + split.amount, 0) || 0;
+
+    // Available = Total Assigned + Total Activity + Total Split Activity (activity is negative for spending)
+    availableByCategory.set(category.id, totalAssigned + totalActivity + totalSplitActivity);
   });
 
   // Build the category group data structure
