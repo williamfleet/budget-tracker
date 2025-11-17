@@ -1,14 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import SignOutButton from '@/components/SignOutButton';
-import ReportsPageClient from '@/components/reports/ReportsPageClient';
-import {
-  getSpendingByCategory,
-  getMonthlyTrends,
-  getIncomeVsExpenses,
-} from '@/lib/services/reports';
+import DebtsPageClient from '@/components/debts/DebtsPageClient';
+import { getDebts, getDebtStatistics } from '@/lib/services/debts';
+import { getAccounts } from '@/lib/services/accounts';
 
-export default async function ReportsPage() {
+export default async function DebtsPage() {
   const supabase = await createClient();
 
   const {
@@ -19,27 +16,12 @@ export default async function ReportsPage() {
     redirect('/login');
   }
 
-  // Default to current month
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    .toISOString()
-    .split('T')[0];
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-    .toISOString()
-    .split('T')[0];
-
-  // Fetch report data
-  const spendingByCategory = await getSpendingByCategory(
-    user.id,
-    startOfMonth,
-    endOfMonth
-  );
-  const monthlyTrends = await getMonthlyTrends(user.id, 6);
-  const incomeVsExpenses = await getIncomeVsExpenses(
-    user.id,
-    startOfMonth,
-    endOfMonth
-  );
+  // Fetch debts, accounts, and statistics
+  const [debts, accounts, statistics] = await Promise.all([
+    getDebts(user.id, true), // Include inactive debts
+    getAccounts(user.id),
+    getDebtStatistics(user.id),
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -71,7 +53,7 @@ export default async function ReportsPage() {
                 </a>
                 <a
                   href="/reports"
-                  className="text-sm sm:text-base text-indigo-600 hover:text-indigo-800 font-medium"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium"
                 >
                   Reports
                 </a>
@@ -83,7 +65,7 @@ export default async function ReportsPage() {
                 </a>
                 <a
                   href="/debts"
-                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium"
+                  className="text-sm sm:text-base text-indigo-600 hover:text-indigo-800 font-medium"
                 >
                   Debts
                 </a>
@@ -100,10 +82,10 @@ export default async function ReportsPage() {
       </nav>
 
       <main className="px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <ReportsPageClient
-          initialSpendingByCategory={spendingByCategory}
-          initialMonthlyTrends={monthlyTrends}
-          initialIncomeVsExpenses={incomeVsExpenses}
+        <DebtsPageClient
+          debts={debts}
+          accounts={accounts}
+          statistics={statistics}
         />
       </main>
     </div>

@@ -72,6 +72,12 @@ export default async function Home({
                 >
                   Accounts
                 </a>
+                <a
+                  href="/debts"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium"
+                >
+                  Debts
+                </a>
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
