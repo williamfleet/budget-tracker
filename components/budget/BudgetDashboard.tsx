@@ -33,8 +33,8 @@ export default function BudgetDashboard({ budgetData, currentMonth }: BudgetDash
 
       {/* Summary Footer */}
       {budgetData.groups.length === 0 && (
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          <p className="text-gray-600">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+          <p className="text-gray-600 dark:text-gray-300">
             No budget categories found. Please set up your categories.
           </p>
         </div>
