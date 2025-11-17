@@ -35,18 +35,18 @@ export default function TransactionCard({
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
       {/* Top row: Date and Amount */}
       <div className="flex items-start justify-between mb-3">
         <div>
-          <p className="text-xs text-gray-500 mb-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1">
             {new Date(transaction.date).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
               year: 'numeric',
             })}
           </p>
-          <p className="font-medium text-gray-900">
+          <p className="font-medium text-gray-900 dark:text-gray-100">
             {transaction.payee || 'No payee'}
           </p>
         </div>
@@ -58,13 +58,13 @@ export default function TransactionCard({
 
       {/* Category */}
       <div className="mb-3">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-600 dark:text-gray-300">
           {transaction.category_name || (
-            <span className="text-green-600 font-medium">Income</span>
+            <span className="text-green-600 dark:text-green-400 font-medium">Income</span>
           )}
         </p>
         {transaction.memo && (
-          <p className="text-xs text-gray-500 mt-1">{transaction.memo}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">{transaction.memo}</p>
         )}
       </div>
 
@@ -72,14 +72,14 @@ export default function TransactionCard({
       <div className="flex gap-3 pt-3 border-t border-gray-100">
         <button
           onClick={() => onEdit(transaction)}
-          className="flex-1 text-sm text-indigo-600 hover:text-indigo-900 font-medium"
+          className="flex-1 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 font-medium"
         >
           Edit
         </button>
         <button
           onClick={handleDelete}
           disabled={isDeleting}
-          className="flex-1 text-sm text-red-600 hover:text-red-900 font-medium disabled:opacity-50"
+          className="flex-1 text-sm text-red-600 dark:text-red-400 hover:text-red-900 font-medium disabled:opacity-50"
         >
           {isDeleting ? 'Deleting...' : 'Delete'}
         </button>

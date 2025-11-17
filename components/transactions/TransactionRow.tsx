@@ -35,9 +35,9 @@ export default function TransactionRow({
   };
 
   return (
-    <tr className="hover:bg-gray-50">
+    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900">
       {/* Date */}
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
         {new Date(transaction.date).toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
@@ -46,19 +46,19 @@ export default function TransactionRow({
       </td>
 
       {/* Payee */}
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
         {transaction.payee || '-'}
       </td>
 
       {/* Category */}
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
         {transaction.category_name || (
-          <span className="text-green-600 font-medium">Income</span>
+          <span className="text-green-600 dark:text-green-400 font-medium">Income</span>
         )}
       </td>
 
       {/* Memo */}
-      <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
+      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 max-w-xs truncate">
         {transaction.memo || '-'}
       </td>
 
@@ -72,14 +72,14 @@ export default function TransactionRow({
       <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
         <button
           onClick={() => onEdit(transaction)}
-          className="text-indigo-600 hover:text-indigo-900 mr-4"
+          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 mr-4"
         >
           Edit
         </button>
         <button
           onClick={handleDelete}
           disabled={isDeleting}
-          className="text-red-600 hover:text-red-900 disabled:opacity-50"
+          className="text-red-600 dark:text-red-400 hover:text-red-900 disabled:opacity-50"
         >
           {isDeleting ? 'Deleting...' : 'Delete'}
         </button>

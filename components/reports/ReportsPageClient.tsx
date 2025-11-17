@@ -29,10 +29,10 @@ export default function ReportsPageClient({
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
           Reports & Analytics
         </h2>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
           Insights into your spending and budgeting patterns
         </p>
       </div>
@@ -45,16 +45,16 @@ export default function ReportsPageClient({
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Spending by Category */}
-        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             Spending by Category
           </h3>
           <SpendingByCategoryChart data={spendingByCategory} />
         </div>
 
         {/* Monthly Trends */}
-        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             Monthly Trends (Last 6 Months)
           </h3>
           <MonthlyTrendsChart data={monthlyTrends} />

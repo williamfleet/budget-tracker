@@ -99,10 +99,10 @@ export default function CategoriesPageClient({
         {/* Header */}
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
               Categories
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
               Manage your budget categories and monthly targets
             </p>
           </div>
@@ -130,15 +130,15 @@ export default function CategoriesPageClient({
 
         {/* Active Categories by Group */}
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900">Active Categories</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Active Categories</h3>
           {activeCategoriesByGroup.map(({ group, categories: groupCategories }) => (
             <div
               key={group.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden"
             >
               {/* Group Header */}
-              <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                <h3 className="text-sm sm:text-base font-bold text-gray-900 uppercase tracking-wide">
+              <div className="bg-gray-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                   {group.name}
                 </h3>
               </div>
@@ -146,27 +146,27 @@ export default function CategoriesPageClient({
               {/* Categories List */}
               <div className="divide-y divide-gray-100">
                 {groupCategories.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-gray-500 text-sm">
+                  <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400 dark:text-gray-500 text-sm">
                     No categories in this group yet
                   </div>
                 ) : (
                   groupCategories.map((category) => (
                     <div
                       key={category.id}
-                      className="px-4 py-3 hover:bg-gray-50 flex items-center justify-between"
+                      className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 flex items-center justify-between"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm sm:text-base font-medium text-gray-900 truncate">
+                        <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100 truncate">
                           {category.name}
                         </p>
-                        <p className="text-xs sm:text-sm text-gray-500">
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                           Target: {formatCurrency(category.target_amount)}
                         </p>
                       </div>
                       <div className="flex items-center gap-2 ml-4">
                         <button
                           onClick={() => handleEdit(category)}
-                          className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
+                          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 text-sm font-medium"
                         >
                           Edit
                         </button>
@@ -188,17 +188,17 @@ export default function CategoriesPageClient({
         {/* Archived Categories */}
         {archivedCategories.length > 0 && (
           <div className="mt-8 space-y-6">
-            <h3 className="text-lg font-semibold text-gray-600">Archived Categories</h3>
+            <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300">Archived Categories</h3>
             {archivedCategoriesByGroup.map(({ group, categories: groupCategories }) => {
               if (groupCategories.length === 0) return null;
               return (
                 <div
                   key={`archived-${group.id}`}
-                  className="bg-gray-50 rounded-lg shadow-sm overflow-hidden"
+                  className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden"
                 >
                   {/* Group Header */}
-                  <div className="bg-gray-100 px-4 py-2 border-b border-gray-200">
-                    <h3 className="text-xs sm:text-sm font-bold text-gray-600 uppercase tracking-wide">
+                  <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                    <h3 className="text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide">
                       {group.name}
                     </h3>
                   </div>
@@ -211,17 +211,17 @@ export default function CategoriesPageClient({
                         className="px-4 py-3 flex items-center justify-between opacity-75"
                       >
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm sm:text-base font-medium text-gray-600 truncate">
+                          <p className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-300 truncate">
                             {category.name}
                           </p>
-                          <p className="text-xs sm:text-sm text-gray-400">
+                          <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500">
                             Target: {formatCurrency(category.target_amount)}
                           </p>
                         </div>
                         <div className="flex items-center gap-2 ml-4">
                           <button
                             onClick={() => handleUnarchive(category)}
-                            className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
+                            className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 text-sm font-medium"
                           >
                             Unarchive
                           </button>

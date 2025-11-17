@@ -71,10 +71,10 @@ export default function AccountsPageClient({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
               Accounts
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
               Manage your bank accounts and balances
             </p>
           </div>
@@ -122,14 +122,14 @@ export default function AccountsPageClient({
         {/* Accounts List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {accounts.length === 0 ? (
-            <div className="col-span-full bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
+            <div className="col-span-full bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center text-gray-500 dark:text-gray-400 dark:text-gray-500">
               No accounts yet. Create your first account to get started!
             </div>
           ) : (
             accounts.map((account) => (
               <div
                 key={account.id}
-                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow"
               >
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -138,10 +138,10 @@ export default function AccountsPageClient({
                         {ACCOUNT_TYPE_ICONS[account.type]}
                       </span>
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                           {account.name}
                         </h3>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                           {ACCOUNT_TYPE_LABELS[account.type]}
                         </p>
                       </div>
@@ -149,14 +149,14 @@ export default function AccountsPageClient({
                   </div>
 
                   <div className="mb-4">
-                    <p className="text-sm text-gray-600">Current Balance</p>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Current Balance</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                       {formatCurrency(balances[account.id] || 0)}
                     </p>
                   </div>
 
                   {account.notes && (
-                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4 line-clamp-2">
                       {account.notes}
                     </p>
                   )}
@@ -164,13 +164,13 @@ export default function AccountsPageClient({
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEditAccount(account)}
-                      className="flex-1 text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                      className="flex-1 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 dark:text-indigo-300 font-medium"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteAccount(account)}
-                      className="flex-1 text-sm text-red-600 hover:text-red-800 font-medium"
+                      className="flex-1 text-sm text-red-600 dark:text-red-400 hover:text-red-800 font-medium"
                     >
                       Delete
                     </button>

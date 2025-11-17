@@ -27,17 +27,17 @@ export default function IncomeVsExpensesCard({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {/* Total Income */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">Total Income</p>
-            <p className="text-2xl font-bold text-green-600 mt-2">
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Income</p>
+            <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">
               {formatCurrency(data.total_income)}
             </p>
           </div>
-          <div className="p-3 bg-green-50 rounded-full">
+          <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-full">
             <svg
-              className="w-8 h-8 text-green-600"
+              className="w-8 h-8 text-green-600 dark:text-green-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -54,17 +54,17 @@ export default function IncomeVsExpensesCard({
       </div>
 
       {/* Total Expenses */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">Total Expenses</p>
-            <p className="text-2xl font-bold text-red-600 mt-2">
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Expenses</p>
+            <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">
               {formatCurrency(data.total_expenses)}
             </p>
           </div>
-          <div className="p-3 bg-red-50 rounded-full">
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-full">
             <svg
-              className="w-8 h-8 text-red-600"
+              className="w-8 h-8 text-red-600 dark:text-red-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -81,10 +81,10 @@ export default function IncomeVsExpensesCard({
       </div>
 
       {/* Net (Income - Expenses) */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">Net</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Net</p>
             <p className={`text-2xl font-bold mt-2 ${netColor}`}>
               {formatCurrency(data.net)}
             </p>

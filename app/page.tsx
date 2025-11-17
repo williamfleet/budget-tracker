@@ -45,37 +45,37 @@ export default async function Home({
               <div className="flex gap-3 sm:gap-4">
                 <a
                   href="/"
-                  className="text-sm sm:text-base text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
+                  className="text-sm sm:text-base text-indigo-600 hover:text-indigo-800 dark:text-indigo-300 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
                 >
                   Budget
                 </a>
                 <a
                   href="/transactions"
-                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 font-medium"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 dark:text-gray-100 dark:text-gray-300 dark:hover:text-gray-100 font-medium"
                 >
                   Transactions
                 </a>
                 <a
                   href="/categories"
-                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 font-medium"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 dark:text-gray-100 dark:text-gray-300 dark:hover:text-gray-100 font-medium"
                 >
                   Categories
                 </a>
                 <a
                   href="/reports"
-                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 font-medium"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 dark:text-gray-100 dark:text-gray-300 dark:hover:text-gray-100 font-medium"
                 >
                   Reports
                 </a>
                 <a
                   href="/accounts"
-                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 font-medium"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 dark:text-gray-100 dark:text-gray-300 dark:hover:text-gray-100 font-medium"
                 >
                   Accounts
                 </a>
                 <a
                   href="/debts"
-                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 font-medium"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 dark:text-gray-100 dark:text-gray-300 dark:hover:text-gray-100 font-medium"
                 >
                   Debts
                 </a>

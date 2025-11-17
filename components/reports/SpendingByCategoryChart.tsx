@@ -27,7 +27,7 @@ export default function SpendingByCategoryChart({
 }: SpendingByCategoryChartProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-500">
+      <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400 dark:text-gray-500">
         No spending data available for this period
       </div>
     );

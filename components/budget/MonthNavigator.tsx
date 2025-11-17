@@ -31,10 +31,10 @@ export default function MonthNavigator({ currentMonth }: MonthNavigatorProps) {
   };
 
   return (
-    <div className="flex items-center justify-between bg-white rounded-lg shadow-md p-3 sm:p-4 mb-4 sm:mb-6">
+    <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-4 mb-4 sm:mb-6">
       <button
         onClick={handlePreviousMonth}
-        className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+        className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 rounded-md transition-colors"
         aria-label="Previous month"
       >
         <svg
@@ -54,13 +54,13 @@ export default function MonthNavigator({ currentMonth }: MonthNavigatorProps) {
       </button>
 
       <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
-        <h2 className="text-base sm:text-lg font-bold text-gray-900 text-center">
+        <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 text-center">
           {formatMonth(currentMonth)}
         </h2>
         {!isCurrentMonth && (
           <button
             onClick={handleCurrentMonth}
-            className="text-xs sm:text-sm px-2 sm:px-3 py-1 text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors whitespace-nowrap"
+            className="text-xs sm:text-sm px-2 sm:px-3 py-1 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:bg-indigo-900/20 rounded-md transition-colors whitespace-nowrap"
           >
             Current
           </button>
@@ -69,7 +69,7 @@ export default function MonthNavigator({ currentMonth }: MonthNavigatorProps) {
 
       <button
         onClick={handleNextMonth}
-        className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+        className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 rounded-md transition-colors"
         aria-label="Next month"
       >
         <span className="hidden sm:inline">Next</span>

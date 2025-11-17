@@ -125,11 +125,11 @@ export default function CategoryRow({ category }: CategoryRowProps) {
           {/* Sticky category column on mobile */}
           <div className={`sticky left-0 z-10 w-32 sm:w-auto flex-shrink-0 sm:col-span-1 pr-2 sm:pr-0 flex items-center ${rowBgColor}`}>
             <div className="flex flex-col">
-              <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
+              <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                 {category.name}
               </span>
               {targetAmount > 0 && (
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   {Math.round(progressPercentage)}%
                 </span>
               )}
@@ -143,7 +143,7 @@ export default function CategoryRow({ category }: CategoryRowProps) {
             <div className="flex flex-col items-end gap-1">
               {isEditing ? (
                 <div className="flex items-center gap-1">
-                  <span className="text-xs sm:text-sm text-gray-500">$</span>
+                  <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">$</span>
                   <input
                     ref={inputRef}
                     type="number"
@@ -159,7 +159,7 @@ export default function CategoryRow({ category }: CategoryRowProps) {
               ) : (
                 <button
                   onClick={handleStartEdit}
-                  className="text-xs sm:text-sm text-gray-900 hover:text-indigo-600 hover:bg-indigo-50 px-2 py-1 rounded transition-colors min-w-[60px] text-right"
+                  className="text-xs sm:text-sm text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:bg-indigo-900/20 px-2 py-1 rounded transition-colors min-w-[60px] text-right"
                 >
                   {assigned}
                 </button>
@@ -168,7 +168,7 @@ export default function CategoryRow({ category }: CategoryRowProps) {
                 <button
                   onClick={handleQuickFillToTarget}
                   disabled={isSubmitting}
-                  className="text-xs text-indigo-600 hover:text-indigo-800 hover:underline disabled:opacity-50"
+                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 dark:text-indigo-300 hover:underline disabled:opacity-50"
                   title="Fill to target"
                 >
                   Fill Target
@@ -179,7 +179,7 @@ export default function CategoryRow({ category }: CategoryRowProps) {
 
           {/* Activity */}
           <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
-            <span className="text-xs sm:text-sm text-gray-600">
+            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
               {category.activity !== 0 ? `-${activity}` : '$0.00'}
             </span>
           </div>
@@ -193,7 +193,7 @@ export default function CategoryRow({ category }: CategoryRowProps) {
 
           {/* Target */}
           <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
-            <span className="text-xs sm:text-sm text-gray-500">
+            <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
               {target}
             </span>
           </div>
@@ -201,11 +201,11 @@ export default function CategoryRow({ category }: CategoryRowProps) {
             {/* Date */}
             <div className="w-16 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-center pr-2 sm:pr-0">
               {category.charge_day ? (
-                <span className="text-xs sm:text-sm text-gray-600 font-medium">
+                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">
                   {category.charge_day}
                 </span>
               ) : (
-                <span className="text-xs sm:text-sm text-gray-400">
+                <span className="text-xs sm:text-sm text-gray-400 dark:text-gray-500">
                   -
                 </span>
               )}
@@ -223,7 +223,7 @@ export default function CategoryRow({ category }: CategoryRowProps) {
 
             {/* Progress bar spans remaining columns */}
             <div className="w-full sm:col-span-5">
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all duration-300 ${getProgressBarColor()}`}
                   style={{ width: `${Math.min(progressPercentage, 100)}%` }}

@@ -31,7 +31,7 @@ export default function MoneyToAssign({
           <h2 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
             Money to Assign
           </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{month}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-2">{month}</p>
           <p
             className={`text-2xl sm:text-3xl font-bold ${
               isPositive
@@ -44,7 +44,7 @@ export default function MoneyToAssign({
             {formatted}
           </p>
           {isPositive && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
               Ready to assign to categories
             </p>
           )}
@@ -54,7 +54,7 @@ export default function MoneyToAssign({
             </p>
           )}
           {!isPositive && !isNegative && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">All money assigned</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">All money assigned</p>
           )}
         </div>
 
@@ -63,11 +63,11 @@ export default function MoneyToAssign({
           <h2 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
             Total Available
           </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Across all categories</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-2">Across all categories</p>
           <p className={`text-2xl sm:text-3xl font-bold ${availableColor}`}>
             {formattedAvailable}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
             {totalAvailable >= 0
               ? 'Available to spend'
               : 'Overspent - need to cover'}
