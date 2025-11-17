@@ -42,10 +42,10 @@ export default function CategoryRow({ category }: CategoryRowProps) {
   // Available amount color (always based on available balance)
   const availableColor =
     category.available > 0
-      ? 'text-green-600'
+      ? 'text-green-600 dark:text-green-400'
       : category.available < 0
-      ? 'text-red-600'
-      : 'text-gray-600';
+      ? 'text-red-600 dark:text-red-400'
+      : 'text-gray-600 dark:text-gray-300';
 
   // Focus input when entering edit mode
   useEffect(() => {
@@ -116,10 +116,12 @@ export default function CategoryRow({ category }: CategoryRowProps) {
     }
   };
 
-  const rowBgColor = category.is_checking ? 'bg-blue-50 hover:bg-blue-100' : 'bg-white hover:bg-gray-50';
+  const rowBgColor = category.is_checking
+    ? 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30'
+    : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700';
 
   return (
-    <div className={`border-b border-gray-100 ${rowBgColor}`}>
+    <div className={`border-b border-gray-100 dark:border-gray-700 ${rowBgColor}`}>
       <div className="py-3 px-2 sm:px-4">
         <div className="flex sm:grid sm:grid-cols-6 sm:gap-4">
           {/* Sticky category column on mobile */}
