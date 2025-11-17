@@ -4,6 +4,12 @@ import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { dollarsToMilliunits } from '@/lib/utils/money';
 
+interface SplitInput {
+  category_id: string;
+  amount: string;
+  memo: string;
+}
+
 export interface CreateTransactionInput {
   type: 'expense' | 'income';
   amount: string; // Dollar amount as string (e.g., "10.50")
@@ -12,6 +18,7 @@ export interface CreateTransactionInput {
   category_id: string | null;
   account_id: string | null;
   memo: string | null;
+  splits?: SplitInput[];
 }
 
 export async function createTransaction(input: CreateTransactionInput) {
@@ -38,8 +45,8 @@ export async function createTransaction(input: CreateTransactionInput) {
   // For income: amount is positive
   const amount = input.type === 'expense' ? -milliunits : milliunits;
 
-  // Validate category for expenses
-  if (input.type === 'expense' && !input.category_id) {
+  // Validate category for expenses (unless using splits)
+  if (input.type === 'expense' && !input.category_id && (!input.splits || input.splits.length === 0)) {
     throw new Error('Category is required for expenses');
   }
 
@@ -61,6 +68,31 @@ export async function createTransaction(input: CreateTransactionInput) {
   if (error) {
     console.error('Error creating transaction:', error);
     throw new Error('Failed to create transaction');
+  }
+
+  // If splits are provided, insert them
+  if (input.splits && input.splits.length > 0) {
+    const splitRecords = input.splits.map((split) => {
+      const splitMilliunits = dollarsToMilliunits(parseFloat(split.amount));
+      return {
+        user_id: user.id,
+        transaction_id: data.id,
+        category_id: split.category_id,
+        amount: -splitMilliunits, // Negative for expense splits
+        memo: split.memo || null,
+      };
+    });
+
+    const { error: splitsError } = await supabase
+      .from('transaction_splits')
+      .insert(splitRecords);
+
+    if (splitsError) {
+      console.error('Error creating transaction splits:', splitsError);
+      // Rollback transaction
+      await supabase.from('transactions').delete().eq('id', data.id);
+      throw new Error('Failed to create transaction splits');
+    }
   }
 
   // Revalidate the home page to refresh the budget data

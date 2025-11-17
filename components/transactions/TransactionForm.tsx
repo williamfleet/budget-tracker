@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Category, CategoryGroup } from '@/lib/types/budget';
 import { Account } from '@/lib/types/accounts';
+import SplitEditor, { Split } from './SplitEditor';
 
 interface TransactionFormProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export interface TransactionFormData {
   category_id: string | null;
   account_id: string | null;
   memo: string;
+  splits?: Split[];
 }
 
 export default function TransactionForm({
@@ -40,6 +42,8 @@ export default function TransactionForm({
   const [memo, setMemo] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [isSplit, setIsSplit] = useState(false);
+  const [splits, setSplits] = useState<Split[]>([]);
 
   // Set default date to today
   useEffect(() => {
@@ -61,8 +65,32 @@ export default function TransactionForm({
         return;
       }
 
-      // Validate category for expenses
-      if (type === 'expense' && !categoryId) {
+      // Validate splits if enabled
+      if (isSplit && type === 'expense') {
+        if (splits.length === 0) {
+          setError('Please add at least one split');
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Validate that all splits have categories
+        if (splits.some((s) => !s.category_id)) {
+          setError('All splits must have a category');
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Validate that split amounts add up to total
+        const splitTotal = splits.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
+        if (Math.abs(splitTotal - amountNum) > 0.01) {
+          setError('Split amounts must add up to the total amount');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // Validate category for non-split expenses
+      if (!isSplit && type === 'expense' && !categoryId) {
         setError('Please select a category');
         setIsSubmitting(false);
         return;
@@ -73,9 +101,10 @@ export default function TransactionForm({
         amount,
         date,
         payee,
-        category_id: type === 'income' ? null : categoryId,
+        category_id: type === 'income' || isSplit ? null : categoryId,
         account_id: accountId || null,
         memo,
+        splits: isSplit && type === 'expense' ? splits : undefined,
       });
 
       // Reset form
@@ -84,6 +113,8 @@ export default function TransactionForm({
       setCategoryId('');
       setAccountId('');
       setMemo('');
+      setIsSplit(false);
+      setSplits([]);
       const today = new Date().toISOString().split('T')[0];
       setDate(today);
       onClose();
@@ -223,8 +254,8 @@ export default function TransactionForm({
             />
           </div>
 
-          {/* Category (only for expenses) */}
-          {type === 'expense' && (
+          {/* Category (only for expenses and not split) */}
+          {type === 'expense' && !isSplit && (
             <div>
               <label
                 htmlFor="category"
@@ -237,7 +268,7 @@ export default function TransactionForm({
                 required
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-100"
               >
                 <option value="">Select a category</option>
                 {categoriesByGroup.map(({ group, categories: groupCats }) => (
@@ -251,6 +282,39 @@ export default function TransactionForm({
                 ))}
               </select>
             </div>
+          )}
+
+          {/* Split Toggle (only for expenses) */}
+          {type === 'expense' && (
+            <div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={isSplit}
+                  onChange={(e) => {
+                    setIsSplit(e.target.checked);
+                    if (!e.target.checked) {
+                      setSplits([]);
+                    }
+                  }}
+                  className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Split across multiple categories
+                </span>
+              </label>
+            </div>
+          )}
+
+          {/* Split Editor */}
+          {type === 'expense' && isSplit && (
+            <SplitEditor
+              splits={splits}
+              onSplitsChange={setSplits}
+              totalAmount={amount}
+              categories={categories}
+              groups={groups}
+            />
           )}
 
           {/* Account */}
