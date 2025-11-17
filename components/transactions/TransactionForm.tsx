@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Category, CategoryGroup } from '@/lib/types/budget';
+import { Account } from '@/lib/types/accounts';
 
 interface TransactionFormProps {
   isOpen: boolean;
   onClose: () => void;
   categories: Category[];
   groups: CategoryGroup[];
+  accounts: Account[];
   onSubmit: (formData: TransactionFormData) => Promise<void>;
 }
 
@@ -17,6 +19,7 @@ export interface TransactionFormData {
   date: string;
   payee: string;
   category_id: string | null;
+  account_id: string | null;
   memo: string;
 }
 
@@ -25,6 +28,7 @@ export default function TransactionForm({
   onClose,
   categories,
   groups,
+  accounts,
   onSubmit,
 }: TransactionFormProps) {
   const [type, setType] = useState<'expense' | 'income'>('expense');
@@ -32,6 +36,7 @@ export default function TransactionForm({
   const [date, setDate] = useState('');
   const [payee, setPayee] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [accountId, setAccountId] = useState('');
   const [memo, setMemo] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -69,6 +74,7 @@ export default function TransactionForm({
         date,
         payee,
         category_id: type === 'income' ? null : categoryId,
+        account_id: accountId || null,
         memo,
       });
 
@@ -76,6 +82,7 @@ export default function TransactionForm({
       setAmount('');
       setPayee('');
       setCategoryId('');
+      setAccountId('');
       setMemo('');
       const today = new Date().toISOString().split('T')[0];
       setDate(today);
@@ -245,6 +252,29 @@ export default function TransactionForm({
               </select>
             </div>
           )}
+
+          {/* Account */}
+          <div>
+            <label
+              htmlFor="account"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Account (optional)
+            </label>
+            <select
+              id="account"
+              value={accountId}
+              onChange={(e) => setAccountId(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">Select an account</option>
+              {accounts.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* Memo */}
           <div>

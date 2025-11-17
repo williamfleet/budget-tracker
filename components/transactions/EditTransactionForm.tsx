@@ -21,6 +21,7 @@ export interface EditTransactionFormData {
   date: string;
   payee: string;
   category_id: string | null;
+  account_id: string | null;
   memo: string;
 }
 
@@ -37,6 +38,7 @@ export default function EditTransactionForm({
   const [date, setDate] = useState('');
   const [payee, setPayee] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [accountId, setAccountId] = useState('');
   const [memo, setMemo] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -49,6 +51,7 @@ export default function EditTransactionForm({
       setDate(transaction.date);
       setPayee(transaction.payee || '');
       setCategoryId(transaction.category_id || '');
+      setAccountId(transaction.account_id || '');
       setMemo(transaction.memo || '');
     }
   }, [transaction]);
@@ -83,6 +86,7 @@ export default function EditTransactionForm({
         date,
         payee,
         category_id: type === 'income' ? null : categoryId,
+        account_id: accountId || null,
         memo,
       });
 

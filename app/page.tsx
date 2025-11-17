@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import SignOutButton from '@/components/SignOutButton';
 import BudgetPage from '@/components/BudgetPage';
 import { getBudgetSummary, getCategories } from '@/lib/services/budget';
+import { getAccounts } from '@/lib/services/accounts';
 import { getCurrentMonth } from '@/lib/utils/date';
 
 export default async function Home({
@@ -24,10 +25,11 @@ export default async function Home({
   const params = await searchParams;
   const selectedMonth = params.month || getCurrentMonth();
 
-  // Fetch budget data and categories
-  const [budgetData, { groups, categories }] = await Promise.all([
+  // Fetch budget data, categories, and accounts
+  const [budgetData, { groups, categories }, accounts] = await Promise.all([
     getBudgetSummary(user.id, selectedMonth),
     getCategories(user.id),
+    getAccounts(user.id),
   ]);
 
   return (
@@ -64,6 +66,12 @@ export default async function Home({
                 >
                   Reports
                 </a>
+                <a
+                  href="/accounts"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium"
+                >
+                  Accounts
+                </a>
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
@@ -81,6 +89,7 @@ export default async function Home({
           budgetData={budgetData}
           categories={categories}
           groups={groups}
+          accounts={accounts}
           currentMonth={selectedMonth}
         />
       </main>

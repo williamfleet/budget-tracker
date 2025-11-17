@@ -1,11 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import SignOutButton from '@/components/SignOutButton';
-import TransactionsPageClient from '@/components/transactions/TransactionsPageClient';
-import { getTransactions } from '@/lib/services/transactions';
-import { getCategories } from '@/lib/services/budget';
+import AccountsPageClient from '@/components/accounts/AccountsPageClient';
+import { getAccounts, getAllAccountBalances } from '@/lib/services/accounts';
 
-export default async function TransactionsPage() {
+export default async function AccountsPage() {
   const supabase = await createClient();
 
   const {
@@ -16,11 +15,11 @@ export default async function TransactionsPage() {
     redirect('/login');
   }
 
-  // Fetch transactions and categories
-  const [{ transactions, total }, { groups, categories }] = await Promise.all([
-    getTransactions(user.id),
-    getCategories(user.id),
-  ]);
+  const accounts = await getAccounts(user.id);
+  const balances = await getAllAccountBalances(user.id);
+
+  // Convert balances Map to object for serialization
+  const balancesObj = Object.fromEntries(balances);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,7 +39,7 @@ export default async function TransactionsPage() {
                 </a>
                 <a
                   href="/transactions"
-                  className="text-sm sm:text-base text-indigo-600 hover:text-indigo-800 font-medium"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium"
                 >
                   Transactions
                 </a>
@@ -58,7 +57,7 @@ export default async function TransactionsPage() {
                 </a>
                 <a
                   href="/accounts"
-                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium"
+                  className="text-sm sm:text-base text-indigo-600 hover:text-indigo-800 font-medium"
                 >
                   Accounts
                 </a>
@@ -75,12 +74,7 @@ export default async function TransactionsPage() {
       </nav>
 
       <main className="px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <TransactionsPageClient
-          initialTransactions={transactions}
-          total={total}
-          categories={categories}
-          groups={groups}
-        />
+        <AccountsPageClient accounts={accounts} balances={balancesObj} />
       </main>
     </div>
   );

@@ -75,6 +75,12 @@ export default async function ReportsPage() {
                 >
                   Reports
                 </a>
+                <a
+                  href="/accounts"
+                  className="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium"
+                >
+                  Accounts
+                </a>
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">

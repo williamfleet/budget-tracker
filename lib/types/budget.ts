@@ -24,6 +24,7 @@ export interface Transaction {
   id: string;
   user_id: string;
   category_id: string | null;
+  account_id: string | null;
   date: string;
   payee: string | null;
   amount: number; // in milliunits (negative = spending, positive = income)

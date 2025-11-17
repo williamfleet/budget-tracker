@@ -10,6 +10,7 @@ export interface CreateTransactionInput {
   date: string; // ISO date string (e.g., "2025-11-11")
   payee: string | null;
   category_id: string | null;
+  account_id: string | null;
   memo: string | null;
 }
 
@@ -48,6 +49,7 @@ export async function createTransaction(input: CreateTransactionInput) {
     .insert({
       user_id: user.id,
       category_id: input.category_id,
+      account_id: input.account_id || null,
       date: input.date,
       payee: input.payee || null,
       amount: amount,
@@ -75,6 +77,7 @@ export interface UpdateTransactionInput {
   date: string;
   payee: string | null;
   category_id: string | null;
+  account_id: string | null;
   memo: string | null;
 }
 
@@ -108,10 +111,11 @@ export async function updateTransaction(input: UpdateTransactionInput) {
   }
 
   // Update transaction
-  const { data, error } = await supabase
+  const { data, error} = await supabase
     .from('transactions')
     .update({
       category_id: input.category_id,
+      account_id: input.account_id || null,
       date: input.date,
       payee: input.payee || null,
       amount: amount,
