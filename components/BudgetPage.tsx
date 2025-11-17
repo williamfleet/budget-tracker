@@ -9,6 +9,7 @@ import TransactionForm, {
   TransactionFormData,
 } from './transactions/TransactionForm';
 import { createTransaction } from '@/app/actions/transactions';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 interface BudgetPageProps {
   budgetData: BudgetSummary;
@@ -26,6 +27,15 @@ export default function BudgetPage({
   currentMonth,
 }: BudgetPageProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Set up page-specific keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'n',
+      description: 'New transaction',
+      action: () => setIsModalOpen(true),
+    },
+  ]);
 
   const handleSubmit = async (formData: TransactionFormData) => {
     await createTransaction({
