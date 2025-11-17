@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Category, CategoryGroup } from '@/lib/types/budget';
 import { TransactionWithCategory } from '@/lib/services/transactions';
 import { milliunitsToDollars } from '@/lib/utils/money';
+import SplitEditor, { Split } from './SplitEditor';
 
 interface EditTransactionFormProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export interface EditTransactionFormData {
   category_id: string | null;
   account_id: string | null;
   memo: string;
+  splits?: Split[];
 }
 
 export default function EditTransactionForm({
@@ -42,6 +44,8 @@ export default function EditTransactionForm({
   const [memo, setMemo] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [isSplit, setIsSplit] = useState(false);
+  const [splits, setSplits] = useState<Split[]>([]);
 
   // Populate form when transaction changes
   useEffect(() => {
@@ -53,6 +57,22 @@ export default function EditTransactionForm({
       setCategoryId(transaction.category_id || '');
       setAccountId(transaction.account_id || '');
       setMemo(transaction.memo || '');
+
+      // Handle splits
+      if (transaction.is_split && transaction.splits) {
+        setIsSplit(true);
+        setSplits(
+          transaction.splits.map((split) => ({
+            id: split.id,
+            category_id: split.category_id,
+            amount: milliunitsToDollars(Math.abs(split.amount)).toFixed(2),
+            memo: split.memo || '',
+          }))
+        );
+      } else {
+        setIsSplit(false);
+        setSplits([]);
+      }
     }
   }, [transaction]);
 
@@ -72,8 +92,32 @@ export default function EditTransactionForm({
         return;
       }
 
-      // Validate category for expenses
-      if (type === 'expense' && !categoryId) {
+      // Validate splits if enabled
+      if (isSplit && type === 'expense') {
+        if (splits.length === 0) {
+          setError('Please add at least one split');
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Validate that all splits have categories
+        if (splits.some((s) => !s.category_id)) {
+          setError('All splits must have a category');
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Validate that split amounts add up to total
+        const splitTotal = splits.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
+        if (Math.abs(splitTotal - amountNum) > 0.01) {
+          setError('Split amounts must add up to the total amount');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // Validate category for non-split expenses
+      if (!isSplit && type === 'expense' && !categoryId) {
         setError('Please select a category');
         setIsSubmitting(false);
         return;
@@ -85,9 +129,10 @@ export default function EditTransactionForm({
         amount,
         date,
         payee,
-        category_id: type === 'income' ? null : categoryId,
+        category_id: type === 'income' || isSplit ? null : categoryId,
         account_id: accountId || null,
         memo,
+        splits: isSplit && type === 'expense' ? splits : undefined,
       });
 
       onClose();
@@ -227,8 +272,8 @@ export default function EditTransactionForm({
             />
           </div>
 
-          {/* Category (only for expenses) */}
-          {type === 'expense' && (
+          {/* Category (only for expenses and not split) */}
+          {type === 'expense' && !isSplit && (
             <div>
               <label
                 htmlFor="category"
@@ -241,7 +286,7 @@ export default function EditTransactionForm({
                 required
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-100"
               >
                 <option value="">Select a category</option>
                 {categoriesByGroup.map(({ group, categories: groupCats }) => (
@@ -255,6 +300,39 @@ export default function EditTransactionForm({
                 ))}
               </select>
             </div>
+          )}
+
+          {/* Split Toggle (only for expenses) */}
+          {type === 'expense' && (
+            <div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={isSplit}
+                  onChange={(e) => {
+                    setIsSplit(e.target.checked);
+                    if (!e.target.checked) {
+                      setSplits([]);
+                    }
+                  }}
+                  className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Split across multiple categories
+                </span>
+              </label>
+            </div>
+          )}
+
+          {/* Split Editor */}
+          {type === 'expense' && isSplit && (
+            <SplitEditor
+              splits={splits}
+              onSplitsChange={setSplits}
+              totalAmount={amount}
+              categories={categories}
+              groups={groups}
+            />
           )}
 
           {/* Memo */}

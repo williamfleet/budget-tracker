@@ -111,6 +111,7 @@ export interface UpdateTransactionInput {
   category_id: string | null;
   account_id: string | null;
   memo: string | null;
+  splits?: SplitInput[];
 }
 
 export async function updateTransaction(input: UpdateTransactionInput) {
@@ -137,8 +138,8 @@ export async function updateTransaction(input: UpdateTransactionInput) {
   // For income: amount is positive
   const amount = input.type === 'expense' ? -milliunits : milliunits;
 
-  // Validate category for expenses
-  if (input.type === 'expense' && !input.category_id) {
+  // Validate category for expenses (unless using splits)
+  if (input.type === 'expense' && !input.category_id && (!input.splits || input.splits.length === 0)) {
     throw new Error('Category is required for expenses');
   }
 
@@ -161,6 +162,44 @@ export async function updateTransaction(input: UpdateTransactionInput) {
   if (error) {
     console.error('Error updating transaction:', error);
     throw new Error('Failed to update transaction');
+  }
+
+  // Handle splits update
+  if (input.splits && input.splits.length > 0) {
+    // Delete existing splits
+    await supabase
+      .from('transaction_splits')
+      .delete()
+      .eq('transaction_id', input.id)
+      .eq('user_id', user.id);
+
+    // Insert new splits
+    const splitRecords = input.splits.map((split) => {
+      const splitMilliunits = dollarsToMilliunits(parseFloat(split.amount));
+      return {
+        user_id: user.id,
+        transaction_id: input.id,
+        category_id: split.category_id,
+        amount: -splitMilliunits, // Negative for expense splits
+        memo: split.memo || null,
+      };
+    });
+
+    const { error: splitsError } = await supabase
+      .from('transaction_splits')
+      .insert(splitRecords);
+
+    if (splitsError) {
+      console.error('Error updating transaction splits:', splitsError);
+      throw new Error('Failed to update transaction splits');
+    }
+  } else {
+    // If no splits provided, delete any existing splits
+    await supabase
+      .from('transaction_splits')
+      .delete()
+      .eq('transaction_id', input.id)
+      .eq('user_id', user.id);
   }
 
   // Revalidate pages
