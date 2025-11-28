@@ -11,7 +11,8 @@ import {
   archiveCategory,
   unarchiveCategory,
 } from '@/app/actions/categories';
-import { formatCurrency } from '@/lib/utils/money';
+import { formatCurrency, formatOrdinalDay } from '@/lib/utils/money';
+import CategoryRow from './CategoryRow';
 
 interface CategoriesPageClientProps {
   groups: CategoryGroup[];
@@ -143,44 +144,46 @@ export default function CategoriesPageClient({
                 </h3>
               </div>
 
-              {/* Categories List */}
-              <div className="divide-y divide-gray-100">
-                {groupCategories.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400 dark:text-gray-500 text-sm">
-                    No categories in this group yet
-                  </div>
-                ) : (
-                  groupCategories.map((category) => (
-                    <div
-                      key={category.id}
-                      className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 flex items-center justify-between"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100 truncate">
-                          {category.name}
-                        </p>
-                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                          Target: {formatCurrency(category.target_amount)}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 ml-4">
-                        <button
-                          onClick={() => handleEdit(category)}
-                          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 text-sm font-medium"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleArchive(category)}
-                          className="text-orange-600 hover:text-orange-900 text-sm font-medium"
-                        >
-                          Archive
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+              {/* Categories Table */}
+              {groupCategories.length === 0 ? (
+                <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400 dark:text-gray-500 text-sm">
+                  No categories in this group yet
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-gray-900">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          Target
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          Due Date
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          Checking
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                      {groupCategories.map((category) => (
+                        <CategoryRow
+                          key={category.id}
+                          category={category}
+                          onEdit={handleEdit}
+                          onArchive={handleArchive}
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -203,31 +206,55 @@ export default function CategoriesPageClient({
                     </h3>
                   </div>
 
-                  {/* Archived Categories List */}
-                  <div className="divide-y divide-gray-200">
-                    {groupCategories.map((category) => (
-                      <div
-                        key={category.id}
-                        className="px-4 py-3 flex items-center justify-between opacity-75"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-300 truncate">
-                            {category.name}
-                          </p>
-                          <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500">
-                            Target: {formatCurrency(category.target_amount)}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          <button
-                            onClick={() => handleUnarchive(category)}
-                            className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 text-sm font-medium"
-                          >
-                            Unarchive
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                  {/* Archived Categories Table */}
+                  <div className="overflow-x-auto opacity-75">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                      <thead className="bg-gray-100 dark:bg-gray-800">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Name
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Target
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Due Date
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Checking
+                          </th>
+                          <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-gray-50 dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                        {groupCategories.map((category) => (
+                          <tr key={category.id} className="hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <td className="px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300">
+                              {category.name}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                              {formatCurrency(category.target_amount)}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                              {formatOrdinalDay(category.charge_day)}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                              {category.is_checking ? 'Yes' : 'No'}
+                            </td>
+                            <td className="px-4 py-3 text-right text-sm">
+                              <button
+                                onClick={() => handleUnarchive(category)}
+                                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 font-medium"
+                              >
+                                Unarchive
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               );

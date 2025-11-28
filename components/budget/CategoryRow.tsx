@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { formatCurrency, milliunitsToDollars } from '@/lib/utils/money';
+import { formatCurrency, milliunitsToDollars, formatOrdinalDay } from '@/lib/utils/money';
 import { CategoryBudgetData } from '@/lib/types/budget';
 import { updateAssignment } from '@/app/actions/assignments';
+import { updateCategoryChargeDay, updateCategoryTarget } from '@/app/actions/categories';
 
 interface CategoryRowProps {
   category: CategoryBudgetData;
@@ -13,7 +14,13 @@ export default function CategoryRow({ category }: CategoryRowProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditingDate, setIsEditingDate] = useState(false);
+  const [dateValue, setDateValue] = useState(category.charge_day?.toString() || '');
+  const [isEditingTarget, setIsEditingTarget] = useState(false);
+  const [targetValue, setTargetValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  const targetInputRef = useRef<HTMLInputElement>(null);
 
   const assigned = formatCurrency(category.assigned);
   const activity = formatCurrency(Math.abs(category.activity));
@@ -54,6 +61,22 @@ export default function CategoryRow({ category }: CategoryRowProps) {
       inputRef.current.select();
     }
   }, [isEditing]);
+
+  // Focus date input when entering edit mode
+  useEffect(() => {
+    if (isEditingDate && dateInputRef.current) {
+      dateInputRef.current.focus();
+      dateInputRef.current.select();
+    }
+  }, [isEditingDate]);
+
+  // Focus target input when entering edit mode
+  useEffect(() => {
+    if (isEditingTarget && targetInputRef.current) {
+      targetInputRef.current.focus();
+      targetInputRef.current.select();
+    }
+  }, [isEditingTarget]);
 
   const handleStartEdit = () => {
     setEditValue(milliunitsToDollars(category.assigned).toFixed(2));
@@ -147,6 +170,64 @@ export default function CategoryRow({ category }: CategoryRowProps) {
     }
   };
 
+  const handleStartEditDate = () => {
+    setDateValue(category.charge_day?.toString() || '');
+    setIsEditingDate(true);
+  };
+
+  const handleCancelEditDate = () => {
+    setIsEditingDate(false);
+    setDateValue(category.charge_day?.toString() || '');
+  };
+
+  const handleSaveDate = async () => {
+    try {
+      await updateCategoryChargeDay(category.id, dateValue);
+      setIsEditingDate(false);
+    } catch (error) {
+      console.error('Failed to update charge day:', error);
+      alert('Failed to update charge day. Please try again.');
+      setDateValue(category.charge_day?.toString() || '');
+    }
+  };
+
+  const handleDateKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveDate();
+    } else if (e.key === 'Escape') {
+      handleCancelEditDate();
+    }
+  };
+
+  const handleStartEditTarget = () => {
+    setTargetValue(milliunitsToDollars(category.target_amount).toFixed(2));
+    setIsEditingTarget(true);
+  };
+
+  const handleCancelEditTarget = () => {
+    setIsEditingTarget(false);
+    setTargetValue('');
+  };
+
+  const handleSaveTarget = async () => {
+    try {
+      await updateCategoryTarget(category.id, targetValue);
+      setIsEditingTarget(false);
+    } catch (error) {
+      console.error('Failed to update target amount:', error);
+      alert('Failed to update target amount. Please try again.');
+      setTargetValue(milliunitsToDollars(category.target_amount).toFixed(2));
+    }
+  };
+
+  const handleTargetKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveTarget();
+    } else if (e.key === 'Escape') {
+      handleCancelEditTarget();
+    }
+  };
+
   const rowBgColor = category.is_checking
     ? 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30'
     : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700';
@@ -226,21 +307,52 @@ export default function CategoryRow({ category }: CategoryRowProps) {
 
           {/* Target */}
           <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
-            <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
-              {target}
-            </span>
+            {isEditingTarget ? (
+              <div className="flex items-center gap-1">
+                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">$</span>
+                <input
+                  ref={targetInputRef}
+                  type="number"
+                  step="0.01"
+                  value={targetValue}
+                  onChange={(e) => setTargetValue(e.target.value)}
+                  onKeyDown={handleTargetKeyDown}
+                  onBlur={handleSaveTarget}
+                  className="w-16 sm:w-24 px-1 sm:px-2 py-1 text-xs sm:text-sm text-right border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+            ) : (
+              <button
+                onClick={handleStartEditTarget}
+                className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 px-2 py-1 rounded transition-colors min-w-[60px] text-right"
+              >
+                {target}
+              </button>
+            )}
           </div>
 
             {/* Date */}
             <div className="w-16 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-center pr-2 sm:pr-0">
-              {category.charge_day ? (
-                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">
-                  {category.charge_day}
-                </span>
+              {isEditingDate ? (
+                <input
+                  ref={dateInputRef}
+                  type="number"
+                  min="1"
+                  max="31"
+                  value={dateValue}
+                  onChange={(e) => setDateValue(e.target.value)}
+                  onKeyDown={handleDateKeyDown}
+                  onBlur={handleSaveDate}
+                  className="w-12 px-1 py-1 text-xs sm:text-sm text-center border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  placeholder="Day"
+                />
               ) : (
-                <span className="text-xs sm:text-sm text-gray-400 dark:text-gray-500">
-                  -
-                </span>
+                <button
+                  onClick={handleStartEditDate}
+                  className={`text-xs sm:text-sm ${category.charge_day ? 'text-gray-600 dark:text-gray-300 font-medium' : 'text-gray-400 dark:text-gray-500'} hover:text-indigo-600 dark:hover:text-indigo-400 px-2 py-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors`}
+                >
+                  {formatOrdinalDay(category.charge_day)}
+                </button>
               )}
             </div>
           </div>

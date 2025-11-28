@@ -169,3 +169,65 @@ export async function updateCategorySortOrder(
   revalidatePath('/categories');
   revalidatePath('/');
 }
+
+export async function updateCategoryChargeDay(
+  categoryId: string,
+  chargeDay: string
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error('User not authenticated');
+  }
+
+  const chargeDayValue = chargeDay ? parseInt(chargeDay) : null;
+
+  const { error } = await supabase
+    .from('categories')
+    .update({ charge_day: chargeDayValue })
+    .eq('id', categoryId)
+    .eq('user_id', user.id);
+
+  if (error) {
+    console.error('Error updating charge day:', error);
+    throw new Error('Failed to update charge day');
+  }
+
+  revalidatePath('/categories');
+  revalidatePath('/');
+}
+
+export async function updateCategoryTarget(
+  categoryId: string,
+  targetAmount: string
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error('User not authenticated');
+  }
+
+  const targetInMilliunits = dollarsToMilliunits(parseFloat(targetAmount));
+
+  const { error } = await supabase
+    .from('categories')
+    .update({ target_amount: targetInMilliunits })
+    .eq('id', categoryId)
+    .eq('user_id', user.id);
+
+  if (error) {
+    console.error('Error updating target amount:', error);
+    throw new Error('Failed to update target amount');
+  }
+
+  revalidatePath('/categories');
+  revalidatePath('/');
+}

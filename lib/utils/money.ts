@@ -62,3 +62,16 @@ export function parseDollarString(str: string): number {
 
   return isNaN(amount) ? 0 : dollarsToMilliunits(amount);
 }
+
+/**
+ * Format a day number with ordinal suffix
+ * Examples: 1 -> "1st", 2 -> "2nd", 3 -> "3rd", 14 -> "14th"
+ */
+export function formatOrdinalDay(day: number | null | undefined): string {
+  if (!day) return '-';
+
+  const suffixes = ['th', 'st', 'nd', 'rd'];
+  const value = day % 100;
+
+  return day + (suffixes[(value - 20) % 10] || suffixes[value] || suffixes[0]);
+}
