@@ -7,8 +7,13 @@ import {
   getMonthlyTrends,
   getIncomeVsExpenses,
 } from '@/lib/services/reports';
+import { getCurrentMonth, getMonthRange } from '@/lib/utils/date';
 
-export default async function ReportsPage() {
+export default async function ReportsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ month?: string }>;
+}) {
   const supabase = await createClient();
 
   const {
@@ -19,14 +24,18 @@ export default async function ReportsPage() {
     redirect('/login');
   }
 
-  // Default to current month
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    .toISOString()
-    .split('T')[0];
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-    .toISOString()
-    .split('T')[0];
+  // Get month from URL params or default to current month
+  const params = await searchParams;
+  const selectedMonth = params.month || getCurrentMonth();
+  const { start: startOfMonth, end: endOfMonth } = getMonthRange(selectedMonth);
+
+  // Fetch categories
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('archived', false)
+    .order('name', { ascending: true });
 
   // Fetch report data
   const spendingByCategory = await getSpendingByCategory(
@@ -104,6 +113,8 @@ export default async function ReportsPage() {
           initialSpendingByCategory={spendingByCategory}
           initialMonthlyTrends={monthlyTrends}
           initialIncomeVsExpenses={incomeVsExpenses}
+          categories={categories || []}
+          selectedMonth={selectedMonth}
         />
       </main>
     </div>

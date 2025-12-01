@@ -8,9 +8,10 @@ import { updateCategoryChargeDay, updateCategoryTarget } from '@/app/actions/cat
 
 interface CategoryRowProps {
   category: CategoryBudgetData;
+  currentMonth: string;
 }
 
-export default function CategoryRow({ category }: CategoryRowProps) {
+export default function CategoryRow({ category, currentMonth }: CategoryRowProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -98,6 +99,7 @@ export default function CategoryRow({ category }: CategoryRowProps) {
       await updateAssignment({
         category_id: category.id,
         amount: editValue,
+        month: currentMonth,
       });
 
       // Emit event for undo/redo tracking with old and new values
@@ -150,6 +152,7 @@ export default function CategoryRow({ category }: CategoryRowProps) {
       await updateAssignment({
         category_id: category.id,
         amount: newAmount,
+        month: currentMonth,
       });
 
       // Emit event for undo/redo tracking with old and new values

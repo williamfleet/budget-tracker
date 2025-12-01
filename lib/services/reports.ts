@@ -82,10 +82,12 @@ export async function getSpendingByCategory(
 
 /**
  * Get monthly spending trends for the past N months
+ * Can optionally filter by category
  */
 export async function getMonthlyTrends(
   userId: string,
-  monthsBack: number = 6
+  monthsBack: number = 6,
+  categoryId?: string
 ): Promise<MonthlyTrend[]> {
   const supabase = await createClient();
 
@@ -98,13 +100,20 @@ export async function getMonthlyTrends(
   const startDateStr = startDate.toISOString().split('T')[0];
   const endDateStr = endDate.toISOString().split('T')[0];
 
-  // Get all transactions in range
-  const { data: transactions, error } = await supabase
+  // Build query
+  let query = supabase
     .from('transactions')
     .select('*')
     .eq('user_id', userId)
     .gte('date', startDateStr)
     .lte('date', endDateStr);
+
+  // Filter by category if provided
+  if (categoryId) {
+    query = query.eq('category_id', categoryId);
+  }
+
+  const { data: transactions, error } = await query;
 
   if (error) throw error;
 

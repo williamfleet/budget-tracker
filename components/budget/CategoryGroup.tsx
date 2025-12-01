@@ -4,9 +4,10 @@ import { formatCurrency } from '@/lib/utils/money';
 
 interface CategoryGroupProps {
   group: CategoryGroupBudgetData;
+  currentMonth: string;
 }
 
-export default function CategoryGroup({ group }: CategoryGroupProps) {
+export default function CategoryGroup({ group, currentMonth }: CategoryGroupProps) {
   const totalAssigned = formatCurrency(group.totalAssigned);
   const totalActivity = formatCurrency(Math.abs(group.totalActivity));
   const totalAvailable = formatCurrency(group.totalAvailable);
@@ -108,7 +109,7 @@ export default function CategoryGroup({ group }: CategoryGroupProps) {
         {/* Category Rows */}
         <div>
           {group.categories.map((category) => (
-            <CategoryRow key={category.id} category={category} />
+            <CategoryRow key={category.id} category={category} currentMonth={currentMonth} />
           ))}
         </div>
       </div>

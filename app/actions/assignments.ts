@@ -8,6 +8,7 @@ import { getCurrentMonth } from '@/lib/utils/date';
 export interface UpdateAssignmentInput {
   category_id: string;
   amount: string; // Dollar amount as string (e.g., "100.00")
+  month?: string; // Optional month (e.g., "2025-11-01"), defaults to current month
 }
 
 export async function updateAssignment(input: UpdateAssignmentInput) {
@@ -29,7 +30,7 @@ export async function updateAssignment(input: UpdateAssignmentInput) {
   }
 
   const milliunits = dollarsToMilliunits(amountInDollars);
-  const currentMonth = getCurrentMonth();
+  const targetMonth = input.month || getCurrentMonth();
 
   // Upsert the monthly assignment (insert or update)
   const { data, error } = await supabase
@@ -38,7 +39,7 @@ export async function updateAssignment(input: UpdateAssignmentInput) {
       {
         user_id: user.id,
         category_id: input.category_id,
-        month: currentMonth,
+        month: targetMonth,
         assigned_amount: milliunits,
       },
       {

@@ -55,7 +55,7 @@ export default function BudgetDashboardWithUndo({
     const applyChanges = async () => {
       for (const [category_id, amount] of assignmentHistory) {
         try {
-          await updateAssignment({ category_id, amount });
+          await updateAssignment({ category_id, amount, month: currentMonth });
         } catch (error) {
           console.error('Error applying undo/redo:', error);
         }
@@ -64,7 +64,7 @@ export default function BudgetDashboardWithUndo({
     };
 
     applyChanges();
-  }, [assignmentHistory]);
+  }, [assignmentHistory, currentMonth]);
 
   // Expose a function to track assignment changes
   const trackAssignmentChange = (category_id: string, oldAmount: string, newAmount: string) => {

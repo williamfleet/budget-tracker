@@ -27,7 +27,7 @@ export default function BudgetDashboard({ budgetData, currentMonth }: BudgetDash
       {/* Category Groups */}
       <div className="space-y-4">
         {budgetData.groups.map((group) => (
-          <CategoryGroup key={group.id} group={group} />
+          <CategoryGroup key={group.id} group={group} currentMonth={currentMonth} />
         ))}
       </div>
 
