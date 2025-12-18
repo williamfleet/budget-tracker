@@ -28,7 +28,7 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
   const available = formatCurrency(category.available);
   const target = formatCurrency(category.target_amount);
 
-  // Calculate progress towards target (Assigned vs Target)
+  // Calculate progress towards target (for display purposes)
   const targetAmount = category.target_amount;
   const assignedAmount = category.assigned;
   const availableAmount = category.available;
@@ -36,16 +36,29 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
     ? Math.min((assignedAmount / targetAmount) * 100, 100)
     : 0;
 
-  // Progress bar color based on assigned vs target
+  // Calculate available vs assigned for status bar
+  const availablePercentage = assignedAmount > 0
+    ? (availableAmount / assignedAmount) * 100
+    : 0;
+
+  // Progress bar color based on available vs assigned
   const getProgressBarColor = () => {
-    if (assignedAmount >= targetAmount) {
-      return 'bg-green-500';
-    } else if (progressPercentage >= 50) {
-      return 'bg-yellow-500';
-    } else {
+    // Overspent - available is negative (less than -$0.01)
+    if (availableAmount < -10) { // -10 milliunits = -$0.01
       return 'bg-red-500';
     }
+
+    // Available is more than 50% of assigned - green
+    if (availablePercentage > 50) {
+      return 'bg-green-500';
+    }
+
+    // Available is less than 50% of assigned - yellow
+    return 'bg-yellow-500';
   };
+
+  // Determine if we should show the progress bar
+  const showProgressBar = assignedAmount > 0;
 
   // Available amount color (always based on available balance)
   const availableColor =
@@ -245,9 +258,9 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
               <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                 {category.name}
               </span>
-              {targetAmount > 0 && (
+              {assignedAmount > 0 && (
                 <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                  {Math.round(progressPercentage)}%
+                  {Math.round(availablePercentage)}%
                 </span>
               )}
             </div>
@@ -362,8 +375,8 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
         </div>
       </div>
 
-      {/* Progress Bar - Only show if target is set */}
-      {targetAmount > 0 && (
+      {/* Progress Bar - Show to indicate funds usage */}
+      {showProgressBar && (
         <div className="px-2 sm:px-4 pb-2">
           <div className="flex sm:grid sm:grid-cols-6 sm:gap-4">
             {/* Empty space for category column */}
@@ -374,7 +387,11 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all duration-300 ${getProgressBarColor()}`}
-                  style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                  style={{
+                    width: availableAmount < -10
+                      ? '100%'
+                      : `${Math.max(0, Math.min(availablePercentage, 100))}%`
+                  }}
                 ></div>
               </div>
             </div>
