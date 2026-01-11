@@ -5,6 +5,7 @@ import { formatCurrency, milliunitsToDollars, formatOrdinalDay } from '@/lib/uti
 import { CategoryBudgetData } from '@/lib/types/budget';
 import { updateAssignment } from '@/app/actions/assignments';
 import { updateCategoryChargeDay, updateCategoryTarget } from '@/app/actions/categories';
+import CategoryDetailModal from './CategoryDetailModal';
 
 interface CategoryRowProps {
   category: CategoryBudgetData;
@@ -19,6 +20,7 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
   const [dateValue, setDateValue] = useState(category.charge_day?.toString() || '');
   const [isEditingTarget, setIsEditingTarget] = useState(false);
   const [targetValue, setTargetValue] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const dateInputRef = useRef<HTMLInputElement>(null);
   const targetInputRef = useRef<HTMLInputElement>(null);
@@ -32,9 +34,6 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
   const targetAmount = category.target_amount;
   const assignedAmount = category.assigned;
   const availableAmount = category.available;
-  const progressPercentage = targetAmount > 0
-    ? Math.min((assignedAmount / targetAmount) * 100, 100)
-    : 0;
 
   // Calculate available vs assigned for status bar
   const availablePercentage = assignedAmount > 0
@@ -249,106 +248,154 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
     : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700';
 
   return (
-    <div className={`border-b border-gray-100 dark:border-gray-700 ${rowBgColor}`}>
-      <div className="py-3 px-2 sm:px-4">
-        <div className="flex sm:grid sm:grid-cols-6 sm:gap-4">
-          {/* Sticky category column on mobile */}
-          <div className={`sticky left-0 z-10 w-32 sm:w-auto flex-shrink-0 sm:col-span-1 pr-2 sm:pr-0 flex items-center ${rowBgColor}`}>
-            <div className="flex flex-col">
-              <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                {category.name}
+    <>
+      <div className={`border-b border-gray-100 dark:border-gray-700 ${rowBgColor}`}>
+        {/* Mobile layout: 3 columns - tappable row */}
+        <div
+          className="grid grid-cols-3 gap-2 px-3 py-3 sm:hidden cursor-pointer active:bg-gray-100 dark:active:bg-gray-700"
+          onClick={() => setIsModalOpen(true)}
+        >
+          {/* Category name */}
+          <div className="flex flex-col justify-center min-w-0">
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+              {category.name}
+            </span>
+            {assignedAmount > 0 && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {Math.round(availablePercentage)}%
               </span>
-              {assignedAmount > 0 && (
-                <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                  {Math.round(availablePercentage)}%
-                </span>
-              )}
-            </div>
+            )}
           </div>
 
-          {/* Scrollable columns */}
-          <div className="flex gap-6 sm:gap-0 sm:contents">
-          {/* Assigned - Editable with Quick Fill */}
-          <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
-            <div className="flex flex-col items-end gap-1">
-              {isEditing ? (
-                <div className="flex items-center gap-1">
-                  <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">$</span>
-                  <input
-                    ref={inputRef}
-                    type="number"
-                    step="0.01"
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    onBlur={handleSave}
-                    disabled={isSubmitting}
-                    className="w-16 sm:w-24 px-1 sm:px-2 py-1 text-xs sm:text-sm text-right border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-              ) : (
-                <button
-                  onClick={handleStartEdit}
-                  className="text-xs sm:text-sm text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:bg-indigo-900/20 px-2 py-1 rounded transition-colors min-w-[60px] text-right"
-                >
-                  {assigned}
-                </button>
-              )}
-              {!isEditing && targetAmount > 0 && availableAmount < targetAmount && (
-                <button
-                  onClick={handleQuickFillToTarget}
-                  disabled={isSubmitting}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 dark:text-indigo-300 hover:underline disabled:opacity-50"
-                  title="Fill to target"
-                >
-                  Fill Target
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Activity */}
-          <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
-            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-              {category.activity !== 0 ? `-${activity}` : '$0.00'}
+          {/* Assigned */}
+          <div className="flex items-center justify-end">
+            <span className="text-sm text-gray-900 dark:text-gray-100">
+              {assigned}
             </span>
           </div>
 
           {/* Available */}
-          <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
-            <span className={`text-xs sm:text-sm font-semibold ${availableColor}`}>
+          <div className="flex items-center justify-end">
+            <span className={`text-sm font-semibold ${availableColor}`}>
               {available}
             </span>
           </div>
+        </div>
 
-          {/* Target */}
-          <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-end">
-            {isEditingTarget ? (
-              <div className="flex items-center gap-1">
-                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">$</span>
-                <input
-                  ref={targetInputRef}
-                  type="number"
-                  step="0.01"
-                  value={targetValue}
-                  onChange={(e) => setTargetValue(e.target.value)}
-                  onKeyDown={handleTargetKeyDown}
-                  onBlur={handleSaveTarget}
-                  className="w-16 sm:w-24 px-1 sm:px-2 py-1 text-xs sm:text-sm text-right border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                />
-              </div>
-            ) : (
-              <button
-                onClick={handleStartEditTarget}
-                className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 px-2 py-1 rounded transition-colors min-w-[60px] text-right"
-              >
-                {target}
-              </button>
-            )}
+        {/* Mobile progress bar */}
+        {showProgressBar && (
+          <div className="px-3 pb-2 sm:hidden">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+              <div
+                className={`h-1.5 rounded-full transition-all duration-300 ${getProgressBarColor()}`}
+                style={{
+                  width: availableAmount < -10
+                    ? '100%'
+                    : `${Math.max(0, Math.min(availablePercentage, 100))}%`
+                }}
+              />
+            </div>
           </div>
+        )}
+
+        {/* Desktop layout: 6 columns */}
+        <div className="hidden sm:block py-3 px-4">
+          <div className="grid grid-cols-6 gap-4">
+            {/* Category name */}
+            <div className="flex items-center">
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                  {category.name}
+                </span>
+                {assignedAmount > 0 && (
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {Math.round(availablePercentage)}%
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Assigned - Editable with Quick Fill */}
+            <div className="flex items-center justify-end">
+              <div className="flex flex-col items-end gap-1">
+                {isEditing ? (
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">$</span>
+                    <input
+                      ref={inputRef}
+                      type="number"
+                      step="0.01"
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      onBlur={handleSave}
+                      disabled={isSubmitting}
+                      className="w-24 px-2 py-1 text-sm text-right border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleStartEdit}
+                    className="text-sm text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 px-2 py-1 rounded transition-colors min-w-[60px] text-right"
+                  >
+                    {assigned}
+                  </button>
+                )}
+                {!isEditing && targetAmount > 0 && availableAmount < targetAmount && (
+                  <button
+                    onClick={handleQuickFillToTarget}
+                    disabled={isSubmitting}
+                    className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:underline disabled:opacity-50"
+                    title="Fill to target"
+                  >
+                    Fill Target
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Activity */}
+            <div className="flex items-center justify-end">
+              <span className="text-sm text-gray-600 dark:text-gray-300">
+                {category.activity !== 0 ? `-${activity}` : '$0.00'}
+              </span>
+            </div>
+
+            {/* Available */}
+            <div className="flex items-center justify-end">
+              <span className={`text-sm font-semibold ${availableColor}`}>
+                {available}
+              </span>
+            </div>
+
+            {/* Target */}
+            <div className="flex items-center justify-end">
+              {isEditingTarget ? (
+                <div className="flex items-center gap-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">$</span>
+                  <input
+                    ref={targetInputRef}
+                    type="number"
+                    step="0.01"
+                    value={targetValue}
+                    onChange={(e) => setTargetValue(e.target.value)}
+                    onKeyDown={handleTargetKeyDown}
+                    onBlur={handleSaveTarget}
+                    className="w-24 px-2 py-1 text-sm text-right border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+              ) : (
+                <button
+                  onClick={handleStartEditTarget}
+                  className="text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 px-2 py-1 rounded transition-colors min-w-[60px] text-right"
+                >
+                  {target}
+                </button>
+              )}
+            </div>
 
             {/* Date */}
-            <div className="w-16 sm:w-auto flex-shrink-0 sm:col-span-1 flex items-center justify-center pr-2 sm:pr-0">
+            <div className="flex items-center justify-center">
               {isEditingDate ? (
                 <input
                   ref={dateInputRef}
@@ -359,13 +406,13 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
                   onChange={(e) => setDateValue(e.target.value)}
                   onKeyDown={handleDateKeyDown}
                   onBlur={handleSaveDate}
-                  className="w-12 px-1 py-1 text-xs sm:text-sm text-center border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-12 px-1 py-1 text-sm text-center border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="Day"
                 />
               ) : (
                 <button
                   onClick={handleStartEditDate}
-                  className={`text-xs sm:text-sm ${category.charge_day ? 'text-gray-600 dark:text-gray-300 font-medium' : 'text-gray-400 dark:text-gray-500'} hover:text-indigo-600 dark:hover:text-indigo-400 px-2 py-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors`}
+                  className={`text-sm ${category.charge_day ? 'text-gray-600 dark:text-gray-300 font-medium' : 'text-gray-400 dark:text-gray-500'} hover:text-indigo-600 dark:hover:text-indigo-400 px-2 py-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors`}
                 >
                   {formatOrdinalDay(category.charge_day)}
                 </button>
@@ -373,31 +420,38 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Progress Bar - Show to indicate funds usage */}
-      {showProgressBar && (
-        <div className="px-2 sm:px-4 pb-2">
-          <div className="flex sm:grid sm:grid-cols-6 sm:gap-4">
-            {/* Empty space for category column */}
-            <div className="hidden sm:block sm:col-span-1"></div>
-
-            {/* Progress bar spans remaining columns */}
-            <div className="w-full sm:col-span-5">
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                <div
-                  className={`h-2 rounded-full transition-all duration-300 ${getProgressBarColor()}`}
-                  style={{
-                    width: availableAmount < -10
-                      ? '100%'
-                      : `${Math.max(0, Math.min(availablePercentage, 100))}%`
-                  }}
-                ></div>
+        {/* Desktop Progress Bar */}
+        {showProgressBar && (
+          <div className="hidden sm:block px-4 pb-2">
+            <div className="grid grid-cols-6 gap-4">
+              {/* Empty space for category column */}
+              <div />
+              {/* Progress bar spans remaining columns */}
+              <div className="col-span-5">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div
+                    className={`h-2 rounded-full transition-all duration-300 ${getProgressBarColor()}`}
+                    style={{
+                      width: availableAmount < -10
+                        ? '100%'
+                        : `${Math.max(0, Math.min(availablePercentage, 100))}%`
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+
+      {/* Category Detail Modal - Mobile only */}
+      <CategoryDetailModal
+        category={category}
+        currentMonth={currentMonth}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
   );
 }

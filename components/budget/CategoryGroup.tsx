@@ -17,101 +17,110 @@ export default function CategoryGroup({ group, currentMonth }: CategoryGroupProp
 
   const availableColor =
     group.totalAvailable > 0
-      ? 'text-green-600'
+      ? 'text-green-600 dark:text-green-400'
       : group.totalAvailable < 0
-      ? 'text-red-600'
-      : 'text-gray-600';
+      ? 'text-red-600 dark:text-red-400'
+      : 'text-gray-600 dark:text-gray-300';
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mb-4 overflow-hidden">
-      {/* Single scroll container for entire group */}
-      <div className="overflow-x-auto">
-        {/* Group Header - Sticky category column on mobile */}
-        <div className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex sm:grid sm:grid-cols-6 sm:gap-4 px-2 sm:px-4 py-3">
-            {/* Sticky category column on mobile */}
-            <div className="sticky left-0 bg-gray-50 dark:bg-gray-900 z-10 w-32 sm:w-auto flex-shrink-0 sm:col-span-1 pr-2 sm:pr-0">
-              <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
-                {group.name}
-              </h3>
-            </div>
-            {/* Scrollable columns */}
-            <div className="flex gap-6 sm:gap-0 sm:contents">
-              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
-                <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
-                  {totalAssigned}
-                </span>
-              </div>
-              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
-                <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
-                  {group.totalActivity !== 0 ? `-${totalActivity}` : '$0.00'}
-                </span>
-              </div>
-              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
-                <span className={`text-xs font-bold ${availableColor}`}>
-                  {totalAvailable}
-                </span>
-              </div>
-              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
-                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                  {totalTarget}
-                </span>
-              </div>
-              <div className="w-16 sm:w-auto flex-shrink-0 sm:col-span-1 text-center pr-2 sm:pr-0">
-                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                  {/* Empty for Date column in header */}
-                </span>
-              </div>
-            </div>
+      {/* Group Header */}
+      <div className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+        {/* Mobile: 3 columns */}
+        <div className="grid grid-cols-3 gap-2 px-3 py-3 sm:hidden">
+          <div>
+            <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide truncate">
+              {group.name}
+            </h3>
+          </div>
+          <div className="text-right">
+            <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+              {totalAssigned}
+            </span>
+          </div>
+          <div className="text-right">
+            <span className={`text-xs font-bold ${availableColor}`}>
+              {totalAvailable}
+            </span>
           </div>
         </div>
 
-        {/* Column Headers - Sticky category column on mobile */}
-        <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex sm:grid sm:grid-cols-6 sm:gap-4 px-2 sm:px-4 py-2">
-            {/* Sticky header */}
-            <div className="sticky left-0 bg-gray-100 dark:bg-gray-800 z-10 w-32 sm:w-auto flex-shrink-0 sm:col-span-1 pr-2 sm:pr-0">
-              <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
-                Category
-              </span>
-            </div>
-            {/* Scrollable headers */}
-            <div className="flex gap-6 sm:gap-0 sm:contents">
-              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
-                <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
-                  Assigned
-                </span>
-              </div>
-              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
-                <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
-                  Activity
-                </span>
-              </div>
-              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
-                <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
-                  Available
-                </span>
-              </div>
-              <div className="w-20 sm:w-auto flex-shrink-0 sm:col-span-1 text-right">
-                <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
-                  Target
-                </span>
-              </div>
-              <div className="w-16 sm:w-auto flex-shrink-0 sm:col-span-1 text-center pr-2 sm:pr-0">
-                <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
-                  Date
-                </span>
-              </div>
-            </div>
+        {/* Desktop: 6 columns */}
+        <div className="hidden sm:grid sm:grid-cols-6 sm:gap-4 px-4 py-3">
+          <div>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+              {group.name}
+            </h3>
+          </div>
+          <div className="text-right">
+            <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+              {totalAssigned}
+            </span>
+          </div>
+          <div className="text-right">
+            <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+              {group.totalActivity !== 0 ? `-${totalActivity}` : '$0.00'}
+            </span>
+          </div>
+          <div className="text-right">
+            <span className={`text-xs font-bold ${availableColor}`}>
+              {totalAvailable}
+            </span>
+          </div>
+          <div className="text-right">
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+              {totalTarget}
+            </span>
+          </div>
+          <div className="text-center">
+            {/* Empty for Date column in header */}
           </div>
         </div>
+      </div>
 
-        {/* Category Rows */}
-        <div>
-          {group.categories.map((category) => (
-            <CategoryRow key={category.id} category={category} currentMonth={currentMonth} />
-          ))}
+      {/* Column Headers */}
+      <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        {/* Mobile: 3 columns */}
+        <div className="grid grid-cols-3 gap-2 px-3 py-2 sm:hidden">
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+            Category
+          </span>
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase text-right">
+            Assigned
+          </span>
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase text-right">
+            Available
+          </span>
         </div>
+
+        {/* Desktop: 6 columns */}
+        <div className="hidden sm:grid sm:grid-cols-6 sm:gap-4 px-4 py-2">
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
+            Category
+          </span>
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase text-right">
+            Assigned
+          </span>
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase text-right">
+            Activity
+          </span>
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase text-right">
+            Available
+          </span>
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase text-right">
+            Target
+          </span>
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase text-center">
+            Date
+          </span>
+        </div>
+      </div>
+
+      {/* Category Rows */}
+      <div>
+        {group.categories.map((category) => (
+          <CategoryRow key={category.id} category={category} currentMonth={currentMonth} />
+        ))}
       </div>
     </div>
   );
