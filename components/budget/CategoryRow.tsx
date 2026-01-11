@@ -267,11 +267,37 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
             )}
           </div>
 
-          {/* Assigned */}
-          <div className="flex items-center justify-end">
-            <span className="text-sm text-gray-900 dark:text-gray-100">
-              {assigned}
-            </span>
+          {/* Assigned - tappable to edit */}
+          <div
+            className="flex items-center justify-end"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleStartEdit();
+            }}
+          >
+            {isEditing ? (
+              <div className="flex items-center">
+                <span className="text-xs text-gray-500 dark:text-gray-400">$</span>
+                <input
+                  ref={inputRef}
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  autoFocus
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  onBlur={handleSave}
+                  disabled={isSubmitting}
+                  className="w-16 px-1 py-0.5 text-sm text-right border border-indigo-500 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            ) : (
+              <span className="text-sm text-gray-900 dark:text-gray-100 px-1 py-0.5 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/20">
+                {assigned}
+              </span>
+            )}
           </div>
 
           {/* Available */}
