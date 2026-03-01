@@ -192,17 +192,17 @@ export async function getBudgetSummary(
     }
   );
 
-  // Calculate total income for current month only
+  // Cumulative income: all uncategorized positive transactions from 2026-01-01 up to this month
   const totalIncome =
-    currentMonthTransactions
-      ?.filter((tx: Transaction) => tx.category_id === null && tx.amount > 0)
+    allTransactions
+      ?.filter((tx: Transaction) => tx.category_id === null && tx.amount > 0 && tx.date >= '2026-01-01')
       .reduce((sum, tx) => sum + tx.amount, 0) || 0;
 
-  // Calculate total assigned for current month only
-  const totalAssigned = groupsData.reduce(
-    (sum, group) => sum + group.totalAssigned,
-    0
-  );
+  // Cumulative assigned: all assignments from 2026-01-01 up to this month
+  const totalAssigned =
+    allAssignments
+      ?.filter((a: MonthlyAssignment) => a.month >= '2026-01-01')
+      .reduce((sum, a) => sum + a.assigned_amount, 0) || 0;
 
   // Calculate total available across all categories
   const totalAvailable = groupsData.reduce(
@@ -210,7 +210,7 @@ export async function getBudgetSummary(
     0
   );
 
-  // Money to Assign = Total Income - Total Assigned (current month only)
+  // Money to Assign = Cumulative Income - Cumulative Assigned (from 2026-01-01)
   const moneyToAssign = totalIncome - totalAssigned;
 
   return {
