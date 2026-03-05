@@ -43,6 +43,21 @@ export async function getSpendingByCategory(
 
   if (txError) throw txError;
 
+  // Get transaction splits in date range (for split transactions)
+  const { data: splits, error: splitsError } = await supabase
+    .from('transaction_splits')
+    .select('*, transactions!inner(date)')
+    .eq('user_id', userId)
+    .gte('transactions.date', startDate)
+    .lte('transactions.date', endDate);
+
+  if (splitsError) throw splitsError;
+
+  // Collect parent transaction IDs that have splits to avoid double-counting
+  const splitParentIds = new Set(
+    splits?.map((s: any) => s.transaction_id) ?? []
+  );
+
   // Get all categories
   const { data: categories, error: catError } = await supabase
     .from('categories')
@@ -54,23 +69,34 @@ export async function getSpendingByCategory(
   // Group by category
   const categoryMap = new Map<string, SpendingByCategory>();
 
-  transactions?.forEach((tx: Transaction) => {
-    if (!tx.category_id) return;
-
-    const category = categories?.find((c: Category) => c.id === tx.category_id);
+  const addToCategory = (categoryId: string, amount: number) => {
+    const category = categories?.find((c: Category) => c.id === categoryId);
     if (!category) return;
 
-    const existing = categoryMap.get(tx.category_id);
+    const existing = categoryMap.get(categoryId);
     if (existing) {
-      existing.total_spent += tx.amount; // tx.amount is negative
+      existing.total_spent += amount;
       existing.transaction_count += 1;
     } else {
-      categoryMap.set(tx.category_id, {
-        category_id: tx.category_id,
+      categoryMap.set(categoryId, {
+        category_id: categoryId,
         category_name: category.name,
-        total_spent: tx.amount,
+        total_spent: amount,
         transaction_count: 1,
       });
+    }
+  };
+
+  // Add non-split transactions
+  transactions?.forEach((tx: Transaction) => {
+    if (!tx.category_id || splitParentIds.has(tx.id)) return;
+    addToCategory(tx.category_id, tx.amount);
+  });
+
+  // Add split transaction amounts
+  splits?.forEach((split: any) => {
+    if (split.amount < 0) {
+      addToCategory(split.category_id, split.amount);
     }
   });
 
@@ -117,28 +143,55 @@ export async function getMonthlyTrends(
 
   if (error) throw error;
 
+  // If filtering by category, also fetch matching splits
+  let splits: any[] = [];
+  let splitParentIds = new Set<string>();
+  if (categoryId) {
+    const { data: splitData, error: splitsError } = await supabase
+      .from('transaction_splits')
+      .select('*, transactions!inner(date)')
+      .eq('user_id', userId)
+      .eq('category_id', categoryId)
+      .gte('transactions.date', startDateStr)
+      .lte('transactions.date', endDateStr);
+
+    if (splitsError) throw splitsError;
+    splits = splitData ?? [];
+    splitParentIds = new Set(splits.map((s: any) => s.transaction_id));
+  }
+
   // Group by month
   const monthMap = new Map<string, MonthlyTrend>();
 
-  transactions?.forEach((tx: Transaction) => {
-    const month = tx.date.substring(0, 7); // YYYY-MM
-
+  const addToMonth = (month: string, amount: number) => {
     const existing = monthMap.get(month);
     if (existing) {
-      if (tx.amount > 0) {
-        existing.income += tx.amount;
+      if (amount > 0) {
+        existing.income += amount;
       } else {
-        existing.expenses += Math.abs(tx.amount);
+        existing.expenses += Math.abs(amount);
       }
-      existing.net += tx.amount;
+      existing.net += amount;
     } else {
       monthMap.set(month, {
         month,
-        income: tx.amount > 0 ? tx.amount : 0,
-        expenses: tx.amount < 0 ? Math.abs(tx.amount) : 0,
-        net: tx.amount,
+        income: amount > 0 ? amount : 0,
+        expenses: amount < 0 ? Math.abs(amount) : 0,
+        net: amount,
       });
     }
+  };
+
+  transactions?.forEach((tx: Transaction) => {
+    // Skip parent transactions that have splits (when filtering by category)
+    if (splitParentIds.has(tx.id)) return;
+    addToMonth(tx.date.substring(0, 7), tx.amount);
+  });
+
+  // Add split amounts
+  splits.forEach((split: any) => {
+    const month = split.transactions.date.substring(0, 7);
+    addToMonth(month, split.amount);
   });
 
   // Convert to array and sort by month
