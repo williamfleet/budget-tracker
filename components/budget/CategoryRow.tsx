@@ -144,20 +144,13 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
   };
 
   const handleQuickFillToTarget = async () => {
-    if (targetAmount === 0) return;
-
-    // Calculate how much more is needed to reach target
-    const amountNeeded = targetAmount - availableAmount;
-
-    // Don't fill if already at or above target
-    if (amountNeeded <= 0) return;
+    if (targetAmount === 0 || category.assigned === targetAmount) return;
 
     // Store previous value for undo
     const previousValue = milliunitsToDollars(category.assigned).toFixed(2);
 
-    // Calculate new assignment: current assigned + amount needed
-    const newAssignment = category.assigned + amountNeeded;
-    const newAmount = milliunitsToDollars(newAssignment).toFixed(2);
+    // Set assigned directly to target
+    const newAmount = milliunitsToDollars(targetAmount).toFixed(2);
 
     setIsSubmitting(true);
     try {
@@ -367,7 +360,7 @@ export default function CategoryRow({ category, currentMonth }: CategoryRowProps
                     {assigned}
                   </button>
                 )}
-                {!isEditing && targetAmount > 0 && availableAmount < targetAmount && (
+                {!isEditing && targetAmount > 0 && category.assigned !== targetAmount && (
                   <button
                     onClick={handleQuickFillToTarget}
                     disabled={isSubmitting}

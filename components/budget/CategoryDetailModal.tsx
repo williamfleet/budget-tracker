@@ -159,13 +159,10 @@ export default function CategoryDetailModal({
 
   // Fill to target
   const handleQuickFillToTarget = async () => {
-    if (targetAmount === 0) return;
-    const amountNeeded = targetAmount - availableAmount;
-    if (amountNeeded <= 0) return;
+    if (targetAmount === 0 || category.assigned === targetAmount) return;
 
     const previousValue = milliunitsToDollars(category.assigned).toFixed(2);
-    const newAssignment = category.assigned + amountNeeded;
-    const newAmount = milliunitsToDollars(newAssignment).toFixed(2);
+    const newAmount = milliunitsToDollars(targetAmount).toFixed(2);
 
     setIsSubmitting(true);
     try {
@@ -364,13 +361,13 @@ export default function CategoryDetailModal({
           </div>
 
           {/* Fill Target button */}
-          {targetAmount > 0 && availableAmount < targetAmount && (
+          {targetAmount > 0 && category.assigned !== targetAmount && (
             <button
               onClick={handleQuickFillToTarget}
               disabled={isSubmitting}
               className="w-full mt-6 py-3 text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg disabled:opacity-50 transition-colors"
             >
-              Fill to Target (+{formatCurrency(targetAmount - availableAmount)})
+              Fill to Target (+{formatCurrency(targetAmount - category.assigned)})
             </button>
           )}
         </div>
