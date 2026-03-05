@@ -25,7 +25,7 @@ export async function updateAssignment(input: UpdateAssignmentInput) {
 
   // Convert dollar amount to milliunits
   const amountInDollars = parseFloat(input.amount);
-  if (isNaN(amountInDollars) || amountInDollars < 0) {
+  if (isNaN(amountInDollars)) {
     throw new Error('Invalid amount');
   }
 
