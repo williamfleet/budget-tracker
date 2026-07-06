@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { fetchAllRows } from '@/lib/supabase/fetch-all';
 import {
   CategoryGroup,
   Category,
@@ -41,42 +42,42 @@ export async function getBudgetSummary(
   if (categoriesError) throw categoriesError;
 
   // Fetch transactions for current month only (for Activity)
-  const { data: currentMonthTransactions, error: currentTxError } = await supabase
-    .from('transactions')
-    .select('*')
-    .eq('user_id', userId)
-    .gte('date', start)
-    .lte('date', end);
-
-  if (currentTxError) throw currentTxError;
+  const currentMonthTransactions = await fetchAllRows<Transaction>(() =>
+    supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('date', start)
+      .lte('date', end)
+  );
 
   // Fetch ALL transactions up to end of this month (for Available rollover)
-  const { data: allTransactions, error: allTxError } = await supabase
-    .from('transactions')
-    .select('*')
-    .eq('user_id', userId)
-    .lte('date', end);
-
-  if (allTxError) throw allTxError;
+  const allTransactions = await fetchAllRows<Transaction>(() =>
+    supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .lte('date', end)
+  );
 
   // Fetch transaction splits for current month (for Activity)
-  const { data: currentMonthSplits, error: currentSplitsError } = await supabase
-    .from('transaction_splits')
-    .select('*, transactions!inner(date)')
-    .eq('user_id', userId)
-    .gte('transactions.date', start)
-    .lte('transactions.date', end);
-
-  if (currentSplitsError) throw currentSplitsError;
+  const currentMonthSplits = await fetchAllRows<any>(() =>
+    supabase
+      .from('transaction_splits')
+      .select('*, transactions!inner(date)')
+      .eq('user_id', userId)
+      .gte('transactions.date', start)
+      .lte('transactions.date', end)
+  );
 
   // Fetch ALL transaction splits up to end of this month (for Available rollover)
-  const { data: allSplits, error: allSplitsError } = await supabase
-    .from('transaction_splits')
-    .select('*, transactions!inner(date)')
-    .eq('user_id', userId)
-    .lte('transactions.date', end);
-
-  if (allSplitsError) throw allSplitsError;
+  const allSplits = await fetchAllRows<any>(() =>
+    supabase
+      .from('transaction_splits')
+      .select('*, transactions!inner(date)')
+      .eq('user_id', userId)
+      .lte('transactions.date', end)
+  );
 
   // Fetch monthly assignments for current month only (for Assigned)
   const { data: currentMonthAssignments, error: currentAssignError } =
@@ -89,13 +90,13 @@ export async function getBudgetSummary(
   if (currentAssignError) throw currentAssignError;
 
   // Fetch ALL assignments up to and including this month (for Available rollover)
-  const { data: allAssignments, error: allAssignError } = await supabase
-    .from('monthly_assignments')
-    .select('*')
-    .eq('user_id', userId)
-    .lte('month', targetMonth);
-
-  if (allAssignError) throw allAssignError;
+  const allAssignments = await fetchAllRows<MonthlyAssignment>(() =>
+    supabase
+      .from('monthly_assignments')
+      .select('*')
+      .eq('user_id', userId)
+      .lte('month', targetMonth)
+  );
 
   // Calculate Activity per category (current month only)
   const activityByCategory = new Map<string, number>();

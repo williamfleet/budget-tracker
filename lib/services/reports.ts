@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { fetchAllRows } from '@/lib/supabase/fetch-all';
 import { Category, Transaction } from '@/lib/types/budget';
 
 export interface SpendingByCategory {
@@ -32,26 +33,26 @@ export async function getSpendingByCategory(
   const supabase = await createClient();
 
   // Get all transactions in date range
-  const { data: transactions, error: txError } = await supabase
-    .from('transactions')
-    .select('*')
-    .eq('user_id', userId)
-    .gte('date', startDate)
-    .lte('date', endDate)
-    .not('category_id', 'is', null) // Only categorized expenses
-    .lt('amount', 0); // Only spending (negative amounts)
-
-  if (txError) throw txError;
+  const transactions = await fetchAllRows<Transaction>(() =>
+    supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('date', startDate)
+      .lte('date', endDate)
+      .not('category_id', 'is', null) // Only categorized expenses
+      .lt('amount', 0) // Only spending (negative amounts)
+  );
 
   // Get transaction splits in date range (for split transactions)
-  const { data: splits, error: splitsError } = await supabase
-    .from('transaction_splits')
-    .select('*, transactions!inner(date)')
-    .eq('user_id', userId)
-    .gte('transactions.date', startDate)
-    .lte('transactions.date', endDate);
-
-  if (splitsError) throw splitsError;
+  const splits = await fetchAllRows<any>(() =>
+    supabase
+      .from('transaction_splits')
+      .select('*, transactions!inner(date)')
+      .eq('user_id', userId)
+      .gte('transactions.date', startDate)
+      .lte('transactions.date', endDate)
+  );
 
   // Collect parent transaction IDs that have splits to avoid double-counting
   const splitParentIds = new Set(
@@ -126,37 +127,35 @@ export async function getMonthlyTrends(
   const startDateStr = startDate.toISOString().split('T')[0];
   const endDateStr = endDate.toISOString().split('T')[0];
 
-  // Build query
-  let query = supabase
-    .from('transactions')
-    .select('*')
-    .eq('user_id', userId)
-    .gte('date', startDateStr)
-    .lte('date', endDateStr);
+  const transactions = await fetchAllRows<Transaction>(() => {
+    let query = supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('date', startDateStr)
+      .lte('date', endDateStr);
 
-  // Filter by category if provided
-  if (categoryId) {
-    query = query.eq('category_id', categoryId);
-  }
+    // Filter by category if provided
+    if (categoryId) {
+      query = query.eq('category_id', categoryId);
+    }
 
-  const { data: transactions, error } = await query;
-
-  if (error) throw error;
+    return query;
+  });
 
   // If filtering by category, also fetch matching splits
   let splits: any[] = [];
   let splitParentIds = new Set<string>();
   if (categoryId) {
-    const { data: splitData, error: splitsError } = await supabase
-      .from('transaction_splits')
-      .select('*, transactions!inner(date)')
-      .eq('user_id', userId)
-      .eq('category_id', categoryId)
-      .gte('transactions.date', startDateStr)
-      .lte('transactions.date', endDateStr);
-
-    if (splitsError) throw splitsError;
-    splits = splitData ?? [];
+    splits = await fetchAllRows<any>(() =>
+      supabase
+        .from('transaction_splits')
+        .select('*, transactions!inner(date)')
+        .eq('user_id', userId)
+        .eq('category_id', categoryId)
+        .gte('transactions.date', startDateStr)
+        .lte('transactions.date', endDateStr)
+    );
     splitParentIds = new Set(splits.map((s: any) => s.transaction_id));
   }
 
@@ -210,14 +209,14 @@ export async function getIncomeVsExpenses(
 ): Promise<IncomeVsExpenses> {
   const supabase = await createClient();
 
-  const { data: transactions, error } = await supabase
-    .from('transactions')
-    .select('*')
-    .eq('user_id', userId)
-    .gte('date', startDate)
-    .lte('date', endDate);
-
-  if (error) throw error;
+  const transactions = await fetchAllRows<Transaction>(() =>
+    supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('date', startDate)
+      .lte('date', endDate)
+  );
 
   let total_income = 0;
   let total_expenses = 0;
