@@ -12,16 +12,20 @@ import {
   unarchiveCategory,
 } from '@/app/actions/categories';
 import { formatCurrency, formatOrdinalDay } from '@/lib/utils/money';
+import { IncomeSource } from '@/lib/types/income';
 import CategoryRow from './CategoryRow';
+import ProjectedIncomeCard from './ProjectedIncomeCard';
 
 interface CategoriesPageClientProps {
   groups: CategoryGroup[];
   categories: Category[];
+  incomeSources: IncomeSource[];
 }
 
 export default function CategoriesPageClient({
   groups,
   categories,
+  incomeSources,
 }: CategoriesPageClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -144,6 +148,12 @@ export default function CategoriesPageClient({
             <span className="sm:hidden">New</span>
           </button>
         </div>
+
+        {/* Projected Income vs Target Expenses */}
+        <ProjectedIncomeCard
+          incomeSources={incomeSources}
+          totalTarget={totalTarget}
+        />
 
         {/* Active Categories by Group */}
         <div className="space-y-6">

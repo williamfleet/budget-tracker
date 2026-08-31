@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import CategoriesPageClient from '@/components/categories/CategoriesPageClient';
 import { getCategories } from '@/lib/services/budget';
+import { getIncomeSources } from '@/lib/services/income';
 
 export default async function CategoriesPage() {
   const supabase = await createClient();
@@ -15,14 +16,21 @@ export default async function CategoriesPage() {
     redirect('/login');
   }
 
-  const { groups, categories } = await getCategories(user.id);
+  const [{ groups, categories }, incomeSources] = await Promise.all([
+    getCategories(user.id),
+    getIncomeSources(user.id),
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navigation userEmail={user.email} />
 
       <main className="px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <CategoriesPageClient groups={groups} categories={categories} />
+        <CategoriesPageClient
+          groups={groups}
+          categories={categories}
+          incomeSources={incomeSources}
+        />
       </main>
     </div>
   );
