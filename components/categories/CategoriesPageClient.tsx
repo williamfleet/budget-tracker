@@ -82,11 +82,27 @@ export default function CategoriesPageClient({
   const activeCategories = categories.filter((cat) => !cat.archived);
   const archivedCategories = categories.filter((cat) => cat.archived);
 
-  // Group active categories by group
-  const activeCategoriesByGroup = groups.map((group) => ({
-    group,
-    categories: activeCategories.filter((cat) => cat.group_id === group.id),
-  }));
+  // Group active categories by group, with each group's target total
+  const activeCategoriesByGroup = groups.map((group) => {
+    const groupCategories = activeCategories.filter(
+      (cat) => cat.group_id === group.id
+    );
+
+    return {
+      group,
+      categories: groupCategories,
+      totalTarget: groupCategories.reduce(
+        (sum, cat) => sum + cat.target_amount,
+        0
+      ),
+    };
+  });
+
+  // Overall target total across all non-archived categories
+  const totalTarget = activeCategories.reduce(
+    (sum, cat) => sum + cat.target_amount,
+    0
+  );
 
   // Group archived categories by group (for collapsed view)
   const archivedCategoriesByGroup = groups.map((group) => ({
@@ -131,17 +147,30 @@ export default function CategoriesPageClient({
 
         {/* Active Categories by Group */}
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Active Categories</h3>
-          {activeCategoriesByGroup.map(({ group, categories: groupCategories }) => (
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Active Categories</h3>
+            <div className="text-right">
+              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Total Target
+              </span>
+              <span className="ml-2 text-lg font-bold text-gray-900 dark:text-gray-100">
+                {formatCurrency(totalTarget)}
+              </span>
+            </div>
+          </div>
+          {activeCategoriesByGroup.map(({ group, categories: groupCategories, totalTarget: groupTarget }) => (
             <div
               key={group.id}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden"
             >
               {/* Group Header */}
-              <div className="bg-gray-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between gap-2 bg-gray-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                   {group.name}
                 </h3>
+                <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  {formatCurrency(groupTarget)}
+                </span>
               </div>
 
               {/* Categories Table */}
